@@ -1,0 +1,116 @@
+/* === Design Gallery Section === */
+.design-gallery {
+    padding: 60px 20px;
+    background: #0a1a2f; /* koyu mavi zemin */
+    color: #fff;
+    text-align: center;
+}
+
+.design-gallery .section-title {
+    font-size: 2.5rem;
+    font-weight: bold;
+    margin-bottom: 10px;
+    color: #ffffff;
+}
+
+.design-gallery .section-subtitle {
+    font-size: 1.2rem;
+    color: #cccccc;
+    margin-bottom: 40px;
+}
+
+/* === Filtre Butonları === */
+.filter-controls {
+    margin-bottom: 40px;
+}
+
+.filter-btn {
+    background: transparent;
+    border: 2px solid #1e3a5f; /* koyu mavi ton */
+    color: #fff;
+    padding: 10px 20px;
+    margin: 5px;
+    border-radius: 30px;
+    cursor: pointer;
+    font-size: 0.95rem;
+    transition: all 0.3s ease;
+}
+
+.filter-btn:hover,
+.filter-btn.active {
+    background: #1e3a5f;
+    color: #fff;
+}
+
+/* === Galeri Grid === */
+.gallery-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 25px;
+    margin-top: 20px;
+}
+
+.gallery-item {
+    background: #111; /* siyah kart */
+    border: 1px solid #1e3a5f;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.gallery-item:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 8px 20px rgba(0,0,0,0.8);
+}
+
+.gallery-item img {
+    width: 100%;
+    height: 200px;
+    object-fit: cover;
+    display: block;
+    border-bottom: 1px solid #1e3a5f;
+}
+
+.gallery-item h3 {
+    font-size: 1.2rem;
+    margin: 15px 10px 5px;
+    color: #00aaff; /* açık mavi vurgular */
+}
+
+.gallery-item p {
+    font-size: 0.9rem;
+    margin: 0 10px 15px;
+    color: #cccccc;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .design-gallery .section-title {
+        font-size: 2rem;
+    }
+    .filter-btn {
+        padding: 8px 15px;
+        font-size: 0.85rem;
+    }
+}
+
+/* Animasyon Efektleri */
+.gallery-item {
+    opacity: 0;
+    transform: translateY(20px);
+    transition: all 0.4s ease;
+}
+
+.gallery-item.show {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+/* Filtreleme sırasında animasyon */
+.gallery-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 25px;
+    margin-top: 20px;
+}

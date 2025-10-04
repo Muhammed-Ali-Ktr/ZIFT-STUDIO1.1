@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Geri Sayım Sayacı | Tarih Atlası</title>
+    <meta name="theme-color" content="#4facfe"/>
+    <meta name="robots" content="index, follow">
+    <meta name="author" content="Tarih Atlası"/>
+    <meta name="language" content="tr-TR"/>
+    <meta name="description" content="Gelişmiş özelliklerle dolu, animasyonlu ve çoklu geri sayım sayacı. Etkinliklerinizi takip edin!">
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="Geri Sayım Sayacı | Tarih Atlası">
+    <meta property="og:description" content="Gelişmiş özelliklerle dolu, animasyonlu ve çoklu geri sayım sayacı. Etkinliklerinizi takip edin!">
+    <meta property="og:url" content="geri-sayim.html">
+    <link rel="canonical" href="geri-sayim.html"/>
+    <link rel="icon" href="/favicon.ico" sizes="48x48">
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <style>
+        * { box-sizing: border-box; }
+        body { font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif; margin: 0; min-height: 100vh; transition: all 0.3s ease; text-align: center; padding: 10px; overflow-x: hidden; }
+        .theme-ocean { background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); }
+        .theme-sunset { background: linear-gradient(135deg, #fa709a 0%, #fee140 100%); }
+        .theme-forest { background: linear-gradient(135deg, #56ab2f 0%, #a8e6cf 100%); }
+        .theme-galaxy { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
+        .theme-fire { background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); }
+        .theme-dark { background: linear-gradient(135deg, #232526 0%, #414345 100%); }
+        .container { max-width: 1200px; margin: 0 auto; padding: 20px; overflow-x: hidden; }
+        .header { margin-bottom: 30px; }
+        h1 { font-size: clamp(2.2rem, 5vw, 3.6rem); margin: 0; text-shadow: 2px 2px 8px rgba(0,0,0,0.3); color: #fff; font-weight: 700; }
+        .theme-selector { display: flex; justify-content: center; align-items: center; gap: 10px; margin: 20px 0; flex-wrap: wrap; padding: 10px; }
+        .theme-btn { width: 45px; height: 45px; border: none; border-radius: 50%; cursor: pointer; transition: all 0.3s ease; border: 3px solid rgba(255,255,255,0.3); aspect-ratio: 1/1; display: inline-block; padding: 0; margin: 0; }
+        .theme-btn:hover { transform: scale(1.1); border-color: rgba(255,255,255,0.8); }
+        .theme-btn.active { transform: scale(1.2); border-color: #fff; box-shadow: 0 0 15px rgba(255,255,255,0.5); }
+        .templates-section { margin: 30px 0; }
+        .templates-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin: 20px 0; }
+        .template-card { background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); border-radius: 15px; padding: 20px; cursor: pointer; transition: all 0.3s ease; backdrop-filter: blur(10px); color: #fff; }
+        .template-card:hover { transform: translateY(-5px); background: rgba(255,255,255,0.2); box-shadow: 0 10px 30px rgba(0,0,0,0.2); }
+        .template-card h3 { margin: 0 0 10px 0; font-size: 1.2em; }
+        .custom-countdown { background: rgba(255,255,255,0.1); border-radius: 20px; padding: 30px; margin: 20px 0; backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.2); color: #fff; }
+        .input-group { display: flex; flex-direction: column; gap: 15px; margin: 20px 0; max-width: 500px; margin-left: auto; margin-right: auto; }
+        input, textarea { padding: 15px; font-size: 1.05em; border: 2px solid rgba(255,255,255,0.3); border-radius: 10px; background: rgba(255,255,255,0.1); color: #fff; backdrop-filter: blur(5px); transition: all 0.3s ease; }
+        input:focus, textarea:focus { outline: none; border-color: rgba(255,255,255,0.7); background: rgba(255,255,255,0.2); box-shadow: 0 0 15px rgba(255,255,255,0.3); }
+        input::placeholder, textarea::placeholder { color: rgba(255,255,255,0.7); }
+        .btn-group { display: flex; gap: 15px; justify-content: center; flex-wrap: wrap; margin: 20px 0; }
+        button { padding: 14px 26px; font-size: 1.05em; border: none; border-radius: 25px; cursor: pointer; transition: all 0.3s ease; background: rgba(255,255,255,0.2); color: #fff; border: 2px solid rgba(255,255,255,0.3); font-weight: 600; }
+        button:hover { background: rgba(255,255,255,0.3); transform: translateY(-2px); box-shadow: 0 8px 25px rgba(0,0,0,0.2); }
+        button:active { transform: translateY(0); }
+        .btn-primary { background: linear-gradient(45deg, #ff6b6b, #ee5a24); border-color: #ff6b6b; }
+        .btn-primary:hover { background: linear-gradient(45deg, #ff5252, #ff3f34); }
+        .countdown-container { display: none; margin: 30px 0; }
+        .countdown-display { display: grid; grid-template-columns: repeat(auto-fit, minmax(100px, 1fr)); gap: 15px; margin: 30px 0; max-width: 800px; margin-left: auto; margin-right: auto; overflow: visible; }
+        .time-unit { background: rgba(255,255,255,0.1); border-radius: 20px; padding: 25px 15px; backdrop-filter: blur(15px); border: 2px solid rgba(255,255,255,0.2); transition: all 0.3s ease; color: #fff; }
+        .time-unit:hover { transform: scale(1.05); background: rgba(255,255,255,0.2); z-index: 100; position: relative; }
+        .time-number { font-size: clamp(2.2rem, 4vw, 3.4rem); font-weight: bold; margin: 10px 0; text-shadow: 2px 2px 4px rgba(0,0,0,0.3); transition: all 0.5s ease; }
+        .time-label { font-size: 1.02em; opacity: 0.9; text-transform: uppercase; letter-spacing: 1px; font-weight: 600; }
+        .progress-ring { width: 100px; height: 100px; margin: 10px auto; display: block; flex-shrink: 0; }
+        .progress-ring-circle { stroke: rgba(255,255,255,0.3); stroke-width: 4; fill: transparent; stroke-linecap: round; transition: stroke-dasharray 0.5s ease; }
+        .progress-ring-progress { stroke: #fff; stroke-width: 4; fill: transparent; stroke-linecap: round; transform: rotate(-90deg); transform-origin: center; }
+        .message-display { font-size: 1.4em; margin: 20px 0; padding: 20px; background: rgba(255,255,255,0.1); border-radius: 15px; backdrop-filter: blur(10px); display: none; color: #fff; }
+        .controls { display: flex; gap: 15px; justify-content: center; margin: 20px 0; flex-wrap: wrap; }
+        .share-options { display: none; flex-direction: column; gap: 15px; margin: 30px 0; padding: 25px; background: rgba(255,255,255,0.1); border-radius: 20px; backdrop-filter: blur(10px); color: #fff; }
+        .social-buttons { display: flex; gap: 15px; justify-content: center; flex-wrap: wrap; }
+        .social-btn { padding: 12px 20px; border-radius: 25px; text-decoration: none; color: #fff; font-weight: 600; transition: all 0.3s ease; display: flex; align-items: center; gap: 8px; }
+        .social-whatsapp { background: #25D366; }
+        .social-twitter { background: #1DA1F2; }
+        .social-facebook { background: #1877F2; }
+        .social-telegram { background: #0088CC; }
+        .qr-container { display: none; margin: 20px 0; padding: 25px; background: rgba(255,255,255,0.1); border-radius: 20px; backdrop-filter: blur(15px); border: 2px solid rgba(255,255,255,0.2); text-align: center; color: #fff; }
+        .qr-container h4 { margin-top: 0; margin-bottom: 15px; font-size: 1.2em; }
+        #qr-code { display: flex; justify-content: center; align-items: center; margin: 15px 0; min-height: 200px; }
+        #qr-code img { border-radius: 10px; box-shadow: 0 8px 25px rgba(0,0,0,0.3); }
+        .multiple-counters { margin: 40px 0; display: none; color: #fff; }
+        .counter-item { background: rgba(255,255,255,0.1); border-radius: 15px; padding: 25px; margin: 20px 0; backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.2); transition: all 0.3s ease; }
+        .multi-counter-display { grid-template-columns: repeat(4, 1fr); gap: 10px; margin: 15px 0; max-width: 100%; display: grid; }
+        .counter-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; gap: 15px; }
+        .delete-counter { background: #ff4757; color: white; border: none; padding: 8px 15px; border-radius: 20px; cursor: pointer; font-size: 0.9em; transition: all 0.3s ease; }
+        .links { margin-top: 40px; padding-top: 20px; border-top: 1px solid rgba(255,255,255,0.2); }
+        .links a { color: rgba(255,255,255,0.9); text-decoration: none; margin: 0 15px; }
+        @media (max-width: 768px) {
+            .countdown-display { grid-template-columns: repeat(2, 1fr); gap: 10px; margin: 20px 0; }
+            .time-unit { padding: 15px 5px; }
+            .time-number { font-size: clamp(1.8rem, 5vw, 2.5rem); }
+            .progress-ring { width: 80px; height: 80px; }
+            .btn-group { flex-direction: column; align-items: center; }
+            button { width: 100%; max-width: 300px; }
+            .social-buttons { flex-direction: column; }
+            .templates-grid { grid-template-columns: 1fr; }
+            .container { padding: 15px; }
+            .multi-counter-display { grid-template-columns: repeat(2, 1fr); gap: 8px; }
+        }
+        @media (max-width: 480px) {
+            .countdown-display { grid-template-columns: repeat(2, 1fr); gap: 8px; margin: 15px 0; }
+            .time-unit { padding: 10px 3px; }
+            .time-number { font-size: clamp(1.5rem, 6vw, 2rem); }
+            .progress-ring { width: 70px; height: 70px; }
+            .container { padding: 10px; }
+            .multi-counter-display { grid-template-columns: repeat(2, 1fr); gap: 5px; }
+        }
+        @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.05); } 100% { transform: scale(1); } }
+        .pulse { animation: pulse 2s infinite; }
+    </style>
+    <!-- Google Analytics (opsiyonel) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-XXXXX"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);} gtag('js', new Date()); gtag('config', 'G-XXXXX');
+    </script>
+    <!-- AdSense (isteğe bağlı: client kimliğinizi ekleyin) -->
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-xxxxxxxxxxxxxxxx" crossorigin="anonymous"></script>
+    <meta name="google-adsense-account" content="ca-pub-xxxxxxxxxxxxxxxx">
+</head>
+<body class="theme-ocean theme-override">
+    <div class="container">
+        <div class="header">
+            <h1>Geri Sayım Sayacı</h1>
+            <div class="theme-selector">
+                <button class="theme-btn active" onclick="changeTheme('ocean')" style="background: linear-gradient(45deg, #4facfe, #00f2fe)" title="Okyanus"></button>
+                <button class="theme-btn" onclick="changeTheme('sunset')" style="background: linear-gradient(45deg, #fa709a, #fee140)" title="Gün Batımı"></button>
+                <button class="theme-btn" onclick="changeTheme('forest')" style="background: linear-gradient(45deg, #56ab2f, #a8e6cf)" title="Orman"></button>
+                <button class="theme-btn" onclick="changeTheme('galaxy')" style="background: linear-gradient(45deg, #667eea, #764ba2)" title="Galaksi"></button>
+                <button class="theme-btn" onclick="changeTheme('fire')" style="background: linear-gradient(45deg, #f093fb, #f5576c)" title="Ateş"></button>
+                <button class="theme-btn" onclick="changeTheme('dark')" style="background: linear-gradient(45deg, #232526, #414345)" title="Karanlık"></button>
+            </div>
+        </div>
+
+        <div class="templates-section">
+            <h2 style="color:#fff">🎯 Hızlı Şablonlar</h2>
+            <div class="templates-grid">
+                <div class="template-card" onclick="setTemplate('newyear')">
+                    <h3>🎊 Yeni Yıl</h3>
+                    <p>Yeni yıla geri sayım</p>
+                </div>
+                <div class="template-card" onclick="setTemplate('weekend')">
+                    <h3>🌅 Hafta Sonu</h3>
+                    <p>Önümüzdeki hafta sonuna kadar</p>
+                </div>
+                <div class="template-card" onclick="setTemplate('birthday')">
+                    <h3>🎂 Doğum Günü</h3>
+                    <p>Doğum günüme kadar</p>
+                </div>
+                <div class="template-card" onclick="setTemplate('exam')">
+                    <h3>📚 Sınav</h3>
+                    <p>Sınavıma kadar</p>
+                </div>
+                <div class="template-card" onclick="setTemplate('vacation')">
+                    <h3>🏖️ Tatil</h3>
+                    <p>Tatile kadar</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="custom-countdown">
+            <h2>Özel Geri Sayım Oluştur</h2>
+            <div class="input-group">
+                <input type="text" id="countdownTitle" placeholder="🎯 Geri sayım başlığı (örn: Mezuniyetim)">
+                <input type="datetime-local" id="datetime">
+                <textarea id="customMessage" placeholder="🎉 Süre dolduğunda gösterilecek mesaj..." rows="3"></textarea>
+            </div>
+            <div class="btn-group">
+                <button class="btn-primary" onclick="startCountdown()">🚀 Geri Sayımı Başlat</button>
+                <button onclick="addToMultiple()">➕ Çoklu Sayaçlara Ekle</button>
+                <button id="clear-autosave-btn" onclick="clearAutoSave()" style="background:#ff6b6b; display:none;">💾 Otomatik Kayıtları Temizle</button>
+            </div>
+        </div>
+
+        <div class="countdown-container" id="countdown-container">
+            <div id="countdownTitle-display"><h2 style="color:#fff">🎯 Geri Sayım Başladı!</h2></div>
+            <div class="countdown-display" id="countdown-display">
+                <div class="time-unit" id="days-unit">
+                    <svg class="progress-ring" viewBox="0 0 100 100">
+                        <circle class="progress-ring-circle" cx="50" cy="50" r="40"></circle>
+                        <circle class="progress-ring-progress" cx="50" cy="50" r="40" id="days-progress"></circle>
+                    </svg>
+                    <div class="time-number" id="days">00</div>
+                    <div class="time-label">Gün</div>
+                </div>
+                <div class="time-unit" id="hours-unit">
+                    <svg class="progress-ring" viewBox="0 0 100 100">
+                        <circle class="progress-ring-circle" cx="50" cy="50" r="40"></circle>
+                        <circle class="progress-ring-progress" cx="50" cy="50" r="40" id="hours-progress"></circle>
+                    </svg>
+                    <div class="time-number" id="hours">00</div>
+                    <div class="time-label">Saat</div>
+                </div>
+                <div class="time-unit" id="minutes-unit">
+                    <svg class="progress-ring" viewBox="0 0 100 100">
+                        <circle class="progress-ring-circle" cx="50" cy="50" r="40"></circle>
+                        <circle class="progress-ring-progress" cx="50" cy="50" r="40" id="minutes-progress"></circle>
+                    </svg>
+                    <div class="time-number" id="minutes">00</div>
+                    <div class="time-label">Dakika</div>
+                </div>
+                <div class="time-unit" id="seconds-unit">
+                    <svg class="progress-ring" viewBox="0 0 100 100">
+                        <circle class="progress-ring-circle" cx="50" cy="50" r="40"></circle>
+                        <circle class="progress-ring-progress" cx="50" cy="50" r="40" id="seconds-progress"></circle>
+                    </svg>
+                    <div class="time-number" id="seconds">00</div>
+                    <div class="time-label">Saniye</div>
+                </div>
+            </div>
+            <div class="message-display" id="message-display"></div>
+            <div class="controls">
+                <button onclick="pauseCountdown()" id="pauseBtn">⏸️ Duraklat</button>
+                <button onclick="resetCountdown()">🔄 Sıfırla</button>
+                <button onclick="showShareOptions()">📤 Paylaş</button>
+            </div>
+        </div>
+
+        <div class="share-options" id="share-options">
+            <h3>📤 Paylaşım Seçenekleri</h3>
+            <div class="btn-group">
+                <button onclick="copyToClipboard()">📋 Linki Kopyala</button>
+                <button onclick="generateQR()" id="qr-btn">📱 QR Kod Oluştur</button>
+                <button onclick="downloadQR()" id="download-qr-btn" style="display:none;">💾 QR Kodu İndir</button>
+            </div>
+            <div class="social-buttons">
+                <a href="#" class="social-btn social-whatsapp" onclick="shareOnWhatsApp()">📱 WhatsApp</a>
+                <a href="#" class="social-btn social-twitter" onclick="shareOnTwitter()">🐦 Twitter</a>
+                <a href="#" class="social-btn social-facebook" onclick="shareOnFacebook()">📘 Facebook</a>
+                <a href="#" class="social-btn social-telegram" onclick="shareOnTelegram()">✈️ Telegram</a>
+            </div>
+            <div class="qr-container" id="qr-container">
+                <h4>📱 QR Kod ile Paylaş</h4>
+                <div id="qr-code"></div>
+            </div>
+        </div>
+
+        <div class="multiple-counters" id="multiple-counters">
+            <h2>📊 Çoklu Geri Sayaçlar</h2>
+            <div id="counters-list"></div>
+            <button onclick="clearAllCounters()" style="background: #ff4757; margin-top: 20px;">🗑️ Tümünü Temizle</button>
+        </div>
+
+        <p style="font-size: 15px; margin-top: 40px; opacity: 0.9; color:#fff;">
+            Gelişmiş özelliklerle yenilenmiş geri sayım sayacı. Bir sorun yaşarsanız iletişime geçin.
+        </p>
+        <div class="links">
+            <a href="/inde.html">🏠 Anasayfa</a>
+        </div>
+    </div>
+
+    <canvas id="confetti-canvas" class="confetti-canvas" style="position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:9999;"></canvas>
+
+    <script>
+        let mainInterval; let isPaused = false; let currentTheme = 'ocean'; let multipleCounters = []; let counterId = 0;
+        class AutoSaveManager { constructor(){ this.storageKey = 'countdown-autosave'; this.countersKey = 'countdown-multiple-counters'; }
+            saveMainCountdown(data){ try{ localStorage.setItem(this.storageKey, JSON.stringify({ ...data, savedAt: getTurkeyTime().toISOString() })); }catch(e){} }
+            loadMainCountdown(){ try{ const s = localStorage.getItem(this.storageKey); return s? JSON.parse(s): null; }catch(e){ return null; } }
+            saveMultipleCounters(counters){ try{ const saveData = counters.map(c=>({ id:c.id, title:c.title, targetDate:c.targetDate.toISOString(), savedAt:getTurkeyTime().toISOString() })); localStorage.setItem(this.countersKey, JSON.stringify(saveData)); }catch(e){} }
+            loadMultipleCounters(){ try{ const s = localStorage.getItem(this.countersKey); if(!s) return []; return JSON.parse(s).map(d=>({ id:d.id, title:d.title, targetDate:new Date(d.targetDate), interval:null })); }catch(e){ return []; } }
+            clearMainCountdown(){ try{ localStorage.removeItem(this.storageKey); }catch(e){} }
+            clearAll(){ try{ localStorage.removeItem(this.storageKey); localStorage.removeItem(this.countersKey); }catch(e){} }
+        }
+        const autoSaveManager = new AutoSaveManager();
+        function checkAutoSaveButton(){ const btn = document.getElementById('clear-autosave-btn'); const savedCountdown = autoSaveManager.loadMainCountdown(); const savedCounters = autoSaveManager.loadMultipleCounters(); btn.style.display = ((savedCountdown && savedCountdown.isActive) || (savedCounters && savedCounters.length>0)) ? 'inline-block':'none'; }
+        const circumference = 2 * Math.PI * 40;
+        function changeTheme(theme){ document.body.className = `theme-${theme} theme-override`; currentTheme = theme; document.querySelectorAll('.theme-btn').forEach(btn=>btn.classList.remove('active')); event.target.classList.add('active'); localStorage.setItem('selectedTheme', theme); }
+        function getTurkeyTime(){ return new Date(new Date().toLocaleString('en-US',{timeZone:'Europe/Istanbul'})); }
+        function setTemplate(type){ const now = getTurkeyTime(); let targetDate; let title=''; let message=''; switch(type){
+            case 'newyear': targetDate = new Date(now.getFullYear()+1,0,1,0,0,0); title='🎊 Yeni Yıl'; message='Mutlu yıllar! 🎉'; break;
+            case 'weekend': const d = (6 - now.getDay()) || 7; targetDate = new Date(now); targetDate.setDate(now.getDate()+d); targetDate.setHours(0,0,0,0); title='🌅 Hafta Sonu'; message='Hafta sonu geldi! 🎉'; break;
+            case 'birthday': targetDate = new Date(now.getFullYear(), now.getMonth(), now.getDate()+30); title='🎂 Doğum Günüm'; message='Doğum günün kutlu olsun! 🎂🎉'; break;
+            case 'exam': targetDate = new Date(now.getFullYear(), now.getMonth(), now.getDate()+14); targetDate.setHours(9,0,0,0); title='📚 Sınavım'; message='Başarılar! 💪📚'; break;
+            case 'vacation': targetDate = new Date(now.getFullYear(), now.getMonth()+1, 1); title='🏖️ Tatilim'; message='Tatil zamanı! 🏖️🌴'; break; }
+            document.getElementById('countdownTitle').value = title; const tz = new Date(targetDate.getTime() - (targetDate.getTimezoneOffset()*60000)); document.getElementById('datetime').value = tz.toISOString().slice(0,16); document.getElementById('customMessage').value = message; }
+        function updateProgressRing(elementId, value, max){ const circle = document.getElementById(elementId); const percentage = value / max; const strokeDasharray = circumference * percentage; circle.style.strokeDasharray = `${strokeDasharray} ${circumference}`; }
+        function startCountdown(){ const input = document.getElementById('datetime').value; const title = document.getElementById('countdownTitle').value || 'Geri Sayım'; const customMessage = document.getElementById('customMessage').value || 'Süre doldu! 🎉'; if(mainInterval){ clearInterval(mainInterval); } if(!input){ alert('Lütfen bir tarih ve saat seçin!'); return; } const targetDate = new Date(input); const now = getTurkeyTime(); if(targetDate <= now){ alert('Gelecekte bir tarih seçin!'); return; }
+            const formattedDate = targetDate.toLocaleDateString('tr-TR',{day:'2-digit',month:'2-digit',year:'numeric'}); const formattedTime = targetDate.toLocaleTimeString('tr-TR',{hour:'2-digit',minute:'2-digit'});
+            document.getElementById('countdown-container').style.display = 'block'; document.getElementById('countdownTitle-display').innerHTML = `<h2 style="color:#fff">🎯 ${title} <span style="font-size:0.8em;opacity:0.8;">(${formattedDate} ${formattedTime})</span></h2>`; isPaused=false; document.getElementById('pauseBtn').innerHTML = '⏸️ Duraklat';
+            document.querySelectorAll('.progress-ring-progress').forEach(c=>{ c.style.strokeDasharray = `0 ${circumference}`; c.style.strokeDashoffset = 0; });
+            mainInterval = setInterval(()=>{ if(isPaused) return; const now = getTurkeyTime(); const diff = targetDate - now; if(diff <= 0){ clearInterval(mainInterval); triggerConfetti(); const md = document.getElementById('message-display'); md.innerHTML = customMessage; md.style.display = 'block'; md.classList.add('pulse'); ['days','hours','minutes','seconds'].forEach(id=>document.getElementById(id).textContent='00'); return; }
+                const days = Math.floor(diff/(1000*60*60*24)); const hours = Math.floor((diff%(1000*60*60*24))/(1000*60*60)); const minutes = Math.floor((diff%(1000*60*60))/(1000*60)); const seconds = Math.floor((diff%(1000*60))/1000);
+                updateTimeDisplay('days', days); updateTimeDisplay('hours', hours); updateTimeDisplay('minutes', minutes); updateTimeDisplay('seconds', seconds);
+                updateProgressRing('days-progress', days % 365, 365); updateProgressRing('hours-progress', hours, 24); updateProgressRing('minutes-progress', minutes, 60); updateProgressRing('seconds-progress', seconds, 60);
+                if(diff < 10000){ document.getElementById('seconds-unit').classList.add('pulse'); } else { document.getElementById('seconds-unit').classList.remove('pulse'); }
+            }, 1000);
+            const url = new URL(window.location.href); url.searchParams.set('datetime', input); url.searchParams.set('title', title); url.searchParams.set('message', customMessage); window.history.pushState({}, '', url.href);
+            autoSaveManager.saveMainCountdown({ datetime: input, title, message: customMessage, isActive: true }); checkAutoSaveButton(); }
+        function updateTimeDisplay(elementId, newValue){ const el = document.getElementById(elementId); const val = newValue.toString().padStart(2,'0'); if(el.textContent !== val){ el.style.transform='scale(1.1)'; el.textContent = val; setTimeout(()=>{ el.style.transform='scale(1)'; },150); } }
+        function pauseCountdown(){ isPaused = !isPaused; const btn = document.getElementById('pauseBtn'); btn.innerHTML = isPaused ? '▶️ Devam Et' : '⏸️ Duraklat'; }
+        function resetCountdown(){ if(mainInterval){ clearInterval(mainInterval); } document.getElementById('countdown-container').style.display='none'; document.getElementById('message-display').style.display='none'; document.getElementById('share-options').style.display='none'; isPaused=false; autoSaveManager.clearMainCountdown(); checkAutoSaveButton(); }
+        function showShareOptions(){ const el = document.getElementById('share-options'); el.style.display = el.style.display==='flex' ? 'none' : 'flex'; }
+        function triggerConfetti(){ const duration = 3000; const end = Date.now()+duration; const defaults = { startVelocity:30, spread:360, ticks:60, zIndex:10000 }; function rand(min,max){ return Math.random()*(max-min)+min; } const interval = setInterval(function(){ const left = end - Date.now(); if(left <= 0){ return clearInterval(interval); } const particleCount = 50 * (left/duration); confetti(Object.assign({}, defaults, { particleCount, origin:{ x: rand(0.1,0.3), y: Math.random()-0.2 } })); confetti(Object.assign({}, defaults, { particleCount, origin:{ x: rand(0.7,0.9), y: Math.random()-0.2 } })); }, 250); }
+        function copyToClipboard(){ const url = window.location.href; navigator.clipboard.writeText(url).then(()=>{ alert('📋 Link kopyalandı!'); }).catch(()=>{ alert('⚠️ Link kopyalanamadı'); }); }
+        function generateQR(){ const qrContainer = document.getElementById('qr-container'); const qrCode = document.getElementById('qr-code'); qrCode.innerHTML=''; const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=220x220&data=${encodeURIComponent(window.location.href)}`; const img = document.createElement('img'); img.src = qrUrl; img.alt='QR Kod'; img.width=220; img.height=220; img.onload=()=>{ qrContainer.style.display='block'; document.getElementById('download-qr-btn').style.display='inline-block'; }; img.onerror=()=>{ alert('⚠️ QR kod oluşturulamadı'); }; qrCode.appendChild(img); }
+        function downloadQR(){ const el = document.querySelector('#qr-code img'); if(!el){ alert('⚠️ İndirilecek QR kod bulunamadı'); return; } const a = document.createElement('a'); a.download = `geri-sayim-qr-${Date.now()}.png`; a.href = el.src; a.click(); }
+        function shareOnWhatsApp(){ const text = `🎯 Geri sayım: ${document.getElementById('countdownTitle').value || 'Özel etkinlik'}\n⏰ Takip et: ${window.location.href}`; window.open(`https://wa.me/?text=${encodeURIComponent(text)}`, '_blank'); }
+        function shareOnTwitter(){ const text = `🎯 ${document.getElementById('countdownTitle').value || 'Özel etkinlik'} için geri sayım! ⏰`; window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(window.location.href)}`, '_blank'); }
+        function shareOnFacebook(){ window.open(`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(window.location.href)}`, '_blank'); }
+        function shareOnTelegram(){ const text = `🎯 ${document.getElementById('countdownTitle').value || 'Özel etkinlik'} için geri sayım!`; window.open(`https://t.me/share/url?url=${encodeURIComponent(window.location.href)}&text=${encodeURIComponent(text)}`, '_blank'); }
+        function addToMultiple(){ const input = document.getElementById('datetime').value; const title = document.getElementById('countdownTitle').value || 'Geri Sayım'; if(!input){ alert('⚠️ Önce tarih ve başlık girin!'); return; } const targetDate = new Date(input); const now = getTurkeyTime(); if(targetDate <= now){ alert('⚠️ Gelecekte bir tarih seçin!'); return; } const counter = { id: ++counterId, title, targetDate, interval:null }; multipleCounters.push(counter); renderMultipleCounters(); autoSaveManager.saveMultipleCounters(multipleCounters); checkAutoSaveButton(); }
+        function renderMultipleCounters(){ const container = document.getElementById('counters-list'); container.innerHTML=''; multipleCounters.forEach(counter=>{ const d = counter.targetDate.toLocaleDateString('tr-TR',{day:'2-digit',month:'2-digit',year:'numeric'}); const t = counter.targetDate.toLocaleTimeString('tr-TR',{hour:'2-digit',minute:'2-digit'}); const el = document.createElement('div'); el.className='counter-item'; el.innerHTML = `
+            <div class="counter-header">
+                <h3 style="margin:0;color:#fff;">${counter.title} <span style="font-size:0.7em;opacity:0.8;">(${d} ${t})</span></h3>
+                <button class="delete-counter" onclick="removeCounter(${counter.id})">🗑️ Sil</button>
+            </div>
+            <div class="multi-counter-display">
+                <div class="time-unit"><div class="time-number" id="multi-days-${counter.id}">00</div><div class="time-label">Gün</div></div>
+                <div class="time-unit"><div class="time-number" id="multi-hours-${counter.id}">00</div><div class="time-label">Saat</div></div>
+                <div class="time-unit"><div class="time-number" id="multi-minutes-${counter.id}">00</div><div class="time-label">Dakika</div></div>
+                <div class="time-unit"><div class="time-number" id="multi-seconds-${counter.id}">00</div><div class="time-label">Saniye</div></div>
+            </div>`; container.appendChild(el); counter.interval = setInterval(()=>updateMultipleCounter(counter), 1000); });
+            document.getElementById('multiple-counters').style.display = multipleCounters.length>0 ? 'block':'none'; }
+        function updateMultipleCounter(counter){ const now = getTurkeyTime(); const diff = counter.targetDate - now; if(diff <= 0){ clearInterval(counter.interval); document.getElementById(`multi-days-${counter.id}`).textContent='00'; document.getElementById(`multi-hours-${counter.id}`).textContent='00'; document.getElementById(`multi-minutes-${counter.id}`).textContent='00'; document.getElementById(`multi-seconds-${counter.id}`).textContent='00'; return; }
+            const days = Math.floor(diff/(1000*60*60*24)); const hours = Math.floor((diff%(1000*60*60*24))/(1000*60*60)); const minutes = Math.floor((diff%(1000*60*60))/(1000*60)); const seconds = Math.floor((diff%(1000*60))/1000);
+            document.getElementById(`multi-days-${counter.id}`).textContent = days.toString().padStart(2,'0');
+            document.getElementById(`multi-hours-${counter.id}`).textContent = hours.toString().padStart(2,'0');
+            document.getElementById(`multi-minutes-${counter.id}`).textContent = minutes.toString().padStart(2,'0');
+            document.getElementById(`multi-seconds-${counter.id}`).textContent = seconds.toString().padStart(2,'0'); }
+        function removeCounter(id){ const c = multipleCounters.find(x=>x.id===id); if(c && c.interval) clearInterval(c.interval); multipleCounters = multipleCounters.filter(x=>x.id!==id); renderMultipleCounters(); autoSaveManager.saveMultipleCounters(multipleCounters); checkAutoSaveButton(); }
+        function clearAllCounters(){ multipleCounters.forEach(c=>{ if(c.interval) clearInterval(c.interval); }); multipleCounters=[]; renderMultipleCounters(); autoSaveManager.saveMultipleCounters(multipleCounters); checkAutoSaveButton(); }
+        function clearAutoSave(){ if(confirm('💾 Tüm otomatik kayıtlar silinecek. Emin misiniz?')){ autoSaveManager.clearAll(); checkAutoSaveButton(); alert('💾 Tüm otomatik kayıtlar temizlendi!'); } }
+        window.onload = ()=>{ const urlParams = new URLSearchParams(window.location.search); const datetimeParam = urlParams.get('datetime'); const titleParam = urlParams.get('title'); const messageParam = urlParams.get('message'); const savedCountdown = autoSaveManager.loadMainCountdown(); const savedCounters = autoSaveManager.loadMultipleCounters(); if(savedCounters.length>0){ counterId = Math.max(...savedCounters.map(c=>c.id)); multipleCounters = savedCounters; renderMultipleCounters(); }
+            if(!datetimeParam && savedCountdown && savedCountdown.isActive){ const targetTime = new Date(savedCountdown.datetime); const now = getTurkeyTime(); if(targetTime > now){ document.getElementById('datetime').value = savedCountdown.datetime; document.getElementById('countdownTitle').value = savedCountdown.title || ''; document.getElementById('customMessage').value = savedCountdown.message || ''; startCountdown(); } else { autoSaveManager.clearMainCountdown(); } }
+            if(datetimeParam){ document.getElementById('datetime').value = datetimeParam; if(titleParam) document.getElementById('countdownTitle').value = titleParam; if(messageParam) document.getElementById('customMessage').value = messageParam; startCountdown(); }
+            const savedTheme = localStorage.getItem('selectedTheme'); if(savedTheme){ document.body.className = `theme-${savedTheme} theme-override`; currentTheme = savedTheme; document.querySelectorAll('.theme-btn').forEach(btn=>btn.classList.remove('active')); const btn = document.querySelector(`[onclick="changeTheme('${savedTheme}')"]`); if(btn) btn.classList.add('active'); }
+            checkAutoSaveButton(); };
+    </script>
+</body>
+</html>
+
+

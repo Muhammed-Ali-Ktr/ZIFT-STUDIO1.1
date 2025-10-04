@@ -1,0 +1,229 @@
+/* === Genel Ayarlar === */
+body {
+    margin: 0;
+    font-family: "Poppins", sans-serif;
+    background: #0a1a2f; /* koyu mavi */
+    color: #fff;
+}
+
+/* === Navbar === */
+.navbar {
+    background: #0a1a2f;
+    padding: 15px 30px;
+    display: flex;
+    justify-content: center;
+    border-bottom: 1px solid #222;
+}
+.nav-container {
+    width: 100%;
+    max-width: 1200px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+.logo {
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: #fff;
+}
+.nav-links {
+    list-style: none;
+    display: flex;
+    gap: 20px;
+}
+.nav-links li a {
+    color: #fff;
+    text-decoration: none;
+    transition: 0.3s;
+}
+.nav-links li a:hover,
+.nav-links li a.active {
+    color: #4eaaff;
+}
+
+/* === Hero Section === */
+.hero {
+    text-align: center;
+    padding: 80px 20px;
+    background: linear-gradient(135deg, #0a1a2f, #0f2745);
+}
+.hero h1 {
+    font-size: 3rem;
+    margin: 0;
+}
+.hero .subtitle {
+    font-size: 1.2rem;
+    color: #ddd;
+}
+
+/* === Design Gallery === */
+.design-gallery {
+    padding: 60px 20px;
+    text-align: center;
+}
+.design-gallery .section-title {
+    font-size: 2.5rem;
+    margin-bottom: 10px;
+}
+.design-gallery .section-subtitle {
+    font-size: 1.1rem;
+    color: #aaa;
+    margin-bottom: 40px;
+}
+
+/* Araçlar */
+.tools {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+    margin-bottom: 30px;
+}
+.tools input,
+.tools select {
+    padding: 10px;
+    border: 1px solid #4eaaff;
+    border-radius: 8px;
+    background: #0f2745;
+    color: #fff;
+}
+
+/* Filtre Butonları */
+.filter-controls {
+    margin-bottom: 30px;
+}
+.filter-btn {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 20px;
+    background: #0f2745;
+    color: #fff;
+    cursor: pointer;
+    margin: 5px;
+    transition: 0.3s;
+}
+.filter-btn.active,
+.filter-btn:hover {
+    background: #4eaaff;
+    color: #0a1a2f;
+}
+
+/* === Galeri Grid === */
+.gallery-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 25px;
+}
+.gallery-item {
+    background: #111e36;
+    border-radius: 15px;
+    padding: 20px;
+    text-align: center;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+    transition: 0.3s;
+}
+.gallery-item:hover {
+    transform: translateY(-5px);
+}
+.gallery-item img {
+    width: 100%;
+    border-radius: 12px;
+    margin-bottom: 15px;
+}
+.gallery-item h3 {
+    margin: 10px 0;
+    font-size: 1.3rem;
+}
+
+/* === Açılır Ürün Detayları === */
+.product-details {
+    display: none;
+    margin-top: 15px;
+    text-align: left;
+    background: #0f2745;
+    padding: 15px;
+    border-radius: 10px;
+    animation: fadeIn 0.5s ease;
+}
+.toggle-details {
+    margin-top: 10px;
+    padding: 8px 15px;
+    background: #4eaaff;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    color: #0a1a2f;
+    font-weight: bold;
+    transition: 0.3s;
+}
+.toggle-details:hover {
+    background: #fff;
+    color: #0a1a2f;
+}
+
+/* Açılır Detay Animasyonu */
+@keyframes fadeIn {
+    from {opacity: 0; transform: translateY(-5px);}
+    to {opacity: 1; transform: translateY(0);}
+}
+
+/* === Sipariş İletişim Butonları === */
+.contact-options {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-top: 15px;
+}
+.buy-btn {
+    display: block;
+    padding: 10px;
+    border-radius: 8px;
+    background: #4eaaff;
+    color: #0a1a2f;
+    text-decoration: none;
+    font-weight: bold;
+    transition: 0.3s;
+}
+.buy-btn:hover {
+    background: #fff;
+    color: #0a1a2f;
+}
+
+/* === Footer === */
+.footer {
+    background: #0f2745;
+    padding: 40px 20px;
+    margin-top: 60px;
+}
+.footer-container {
+    max-width: 1200px;
+    margin: auto;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: 30px;
+}
+.footer-logo {
+    color: #4eaaff;
+    font-size: 1.8rem;
+    margin-bottom: 10px;
+}
+.footer-contact p {
+    margin: 8px 0;
+    color: #ccc;
+}
+.footer-bottom {
+    text-align: center;
+    margin-top: 30px;
+    color: #aaa;
+}
+
+/* === Mobil Uyum === */
+@media(max-width: 768px) {
+    .tools {
+        flex-direction: column;
+    }
+    .footer-container {
+        flex-direction: column;
+        text-align: center;
+    }
+}

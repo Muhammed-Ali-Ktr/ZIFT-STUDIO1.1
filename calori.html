@@ -1,0 +1,764 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kalori Hesaplama & Beslenme Rehberi</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            color: #e0e0e0;
+            line-height: 1.6;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        header {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 30px 0;
+            text-align: center;
+            margin-bottom: 40px;
+            border-radius: 10px;
+            backdrop-filter: blur(10px);
+        }
+
+        h1 {
+            color: #ffffff;
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+        }
+
+        .subtitle {
+            color: #b0b0b0;
+            font-size: 1.1em;
+        }
+
+        .tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .tab-button {
+            background: rgba(255, 255, 255, 0.1);
+            color: #ffffff;
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            padding: 12px 30px;
+            cursor: pointer;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: all 0.3s;
+            font-weight: 500;
+        }
+
+        .tab-button:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateY(-2px);
+        }
+
+        .tab-button.active {
+            background: #2a5298;
+            border-color: #3d6bb3;
+            box-shadow: 0 4px 15px rgba(42, 82, 152, 0.4);
+        }
+
+        .tab-content {
+            display: none;
+            animation: fadeIn 0.5s;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .card {
+            background: rgba(0, 0, 0, 0.4);
+            padding: 30px;
+            border-radius: 15px;
+            margin-bottom: 25px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .card h2 {
+            color: #ffffff;
+            margin-bottom: 20px;
+            font-size: 1.8em;
+            border-bottom: 2px solid #2a5298;
+            padding-bottom: 10px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #d0d0d0;
+            font-weight: 500;
+            font-size: 15px;
+        }
+
+        input[type="number"],
+        input[type="text"],
+        select {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.05);
+            color: #ffffff;
+            font-size: 16px;
+            transition: all 0.3s;
+        }
+
+        input:focus, select:focus {
+            outline: none;
+            border-color: #2a5298;
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .radio-group {
+            display: flex;
+            gap: 20px;
+            margin-top: 10px;
+        }
+
+        .radio-label {
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+            color: #d0d0d0;
+        }
+
+        input[type="radio"] {
+            margin-right: 8px;
+            cursor: pointer;
+        }
+
+        button {
+            background: linear-gradient(135deg, #2a5298 0%, #1e3c72 100%);
+            color: white;
+            border: none;
+            padding: 15px 40px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 600;
+            transition: all 0.3s;
+            box-shadow: 0 4px 15px rgba(42, 82, 152, 0.3);
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(42, 82, 152, 0.5);
+        }
+
+        button:active {
+            transform: translateY(0);
+        }
+
+        .results {
+            margin-top: 30px;
+            padding: 25px;
+            background: rgba(42, 82, 152, 0.2);
+            border-radius: 10px;
+            border: 2px solid rgba(42, 82, 152, 0.4);
+        }
+
+        .result-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 15px;
+            margin: 10px 0;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 8px;
+            border-left: 4px solid #2a5298;
+        }
+
+        .result-label {
+            color: #b0b0b0;
+            font-weight: 500;
+        }
+
+        .result-value {
+            color: #ffffff;
+            font-weight: 700;
+            font-size: 1.1em;
+        }
+
+        .info-box {
+            background: rgba(42, 82, 152, 0.2);
+            padding: 15px;
+            border-radius: 8px;
+            margin: 15px 0;
+            border-left: 4px solid #2a5298;
+        }
+
+        .info-box p {
+            color: #d0d0d0;
+            margin: 5px 0;
+        }
+
+        .grid-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        .macro-circle {
+            text-align: center;
+            padding: 20px;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 50%;
+            width: 150px;
+            height: 150px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            margin: 20px auto;
+            border: 3px solid #2a5298;
+        }
+
+        .macro-value {
+            font-size: 2em;
+            font-weight: bold;
+            color: #ffffff;
+        }
+
+        .macro-label {
+            color: #b0b0b0;
+            font-size: 0.9em;
+            margin-top: 5px;
+        }
+
+        .water-tracker {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+            flex-wrap: wrap;
+        }
+
+        .water-glass {
+            width: 40px;
+            height: 60px;
+            border: 2px solid #2a5298;
+            border-radius: 5px;
+            position: relative;
+            cursor: pointer;
+            transition: all 0.3s;
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .water-glass.filled {
+            background: linear-gradient(to top, #2a5298 0%, #3d6bb3 100%);
+        }
+
+        .water-glass:hover {
+            transform: scale(1.1);
+        }
+
+        footer {
+            text-align: center;
+            padding: 20px;
+            color: #b0b0b0;
+            margin-top: 40px;
+        }
+
+        @media (max-width: 768px) {
+            .grid-2 {
+                grid-template-columns: 1fr;
+            }
+            
+            h1 {
+                font-size: 1.8em;
+            }
+            
+            .tabs {
+                flex-direction: column;
+            }
+            
+            .tab-button {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Kalori Hesaplama & Beslenme Rehberi</h1>
+            <p class="subtitle">Sağlıklı yaşam için günlük kalori ve besin değerlerinizi hesaplayın</p>
+        </header>
+
+        <div class="tabs">
+            <button class="tab-button active" onclick="openTab('kalori')">Kalori Hesaplama</button>
+            <button class="tab-button" onclick="openTab('bki')">BMI Hesaplama</button>
+            <button class="tab-button" onclick="openTab('makro')">Makro Hesaplama</button>
+            <button class="tab-button" onclick="openTab('su')">Su Takibi</button>
+            <button class="tab-button" onclick="openTab('ideal')">İdeal Kilo</button>
+        </div>
+
+        <!-- Kalori Hesaplama -->
+        <div id="kalori" class="tab-content active">
+            <div class="card">
+                <h2>Günlük Kalori İhtiyacı Hesaplama</h2>
+                <div class="grid-2">
+                    <div class="form-group">
+                        <label>Yaş:</label>
+                        <input type="number" id="age" placeholder="Örn: 25" min="1" max="120">
+                    </div>
+                    <div class="form-group">
+                        <label>Cinsiyet:</label>
+                        <div class="radio-group">
+                            <label class="radio-label">
+                                <input type="radio" name="gender" value="male" checked> Erkek
+                            </label>
+                            <label class="radio-label">
+                                <input type="radio" name="gender" value="female"> Kadın
+                            </label>
+                        </div>
+                    </div>
+                </div>
+                <div class="grid-2">
+                    <div class="form-group">
+                        <label>Kilo (kg):</label>
+                        <input type="number" id="weight" placeholder="Örn: 70" min="1">
+                    </div>
+                    <div class="form-group">
+                        <label>Boy (cm):</label>
+                        <input type="number" id="height" placeholder="Örn: 175" min="1">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Aktivite Seviyesi:</label>
+                    <select id="activity">
+                        <option value="1.2">Hareketsiz (Hiç egzersiz yapmıyor)</option>
+                        <option value="1.375">Az Hareketli (Haftada 1-3 gün hafif egzersiz)</option>
+                        <option value="1.55" selected>Orta Hareketli (Haftada 3-5 gün orta egzersiz)</option>
+                        <option value="1.725">Çok Hareketli (Haftada 6-7 gün ağır egzersiz)</option>
+                        <option value="1.9">Profesyonel Sporcu (Günde 2 kez ağır egzersiz)</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Hedef:</label>
+                    <select id="goal">
+                        <option value="-500">Kilo Vermek (Haftada 0.5 kg)</option>
+                        <option value="-250">Yavaş Kilo Vermek (Haftada 0.25 kg)</option>
+                        <option value="0" selected>Kilonu Korumak</option>
+                        <option value="250">Yavaş Kilo Almak (Haftada 0.25 kg)</option>
+                        <option value="500">Kilo Almak (Haftada 0.5 kg)</option>
+                    </select>
+                </div>
+                <button onclick="calculateCalories()">Hesapla</button>
+                <div id="calorieResults"></div>
+            </div>
+        </div>
+
+        <!-- BMI Hesaplama -->
+        <div id="bki" class="tab-content">
+            <div class="card">
+                <h2>Vücut Kitle İndeksi (BMI) Hesaplama</h2>
+                <div class="grid-2">
+                    <div class="form-group">
+                        <label>Kilo (kg):</label>
+                        <input type="number" id="bmiWeight" placeholder="Örn: 70" min="1">
+                    </div>
+                    <div class="form-group">
+                        <label>Boy (cm):</label>
+                        <input type="number" id="bmiHeight" placeholder="Örn: 175" min="1">
+                    </div>
+                </div>
+                <button onclick="calculateBMI()">BMI Hesapla</button>
+                <div id="bmiResults"></div>
+                <div class="info-box">
+                    <p><strong>BMI Değerlendirmesi:</strong></p>
+                    <p>• 18.5'in altı: Zayıf</p>
+                    <p>• 18.5 - 24.9: Normal</p>
+                    <p>• 25.0 - 29.9: Fazla Kilolu</p>
+                    <p>• 30.0 ve üzeri: Obez</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Makro Hesaplama -->
+        <div id="makro" class="tab-content">
+            <div class="card">
+                <h2>Makro Besin Hesaplama</h2>
+                <div class="form-group">
+                    <label>Günlük Kalori Hedefi:</label>
+                    <input type="number" id="macroCalories" placeholder="Örn: 2000" min="1">
+                </div>
+                <div class="form-group">
+                    <label>Diyet Tipi:</label>
+                    <select id="dietType">
+                        <option value="balanced">Dengeli (40% Karb, 30% Protein, 30% Yağ)</option>
+                        <option value="lowcarb">Düşük Karbonhidrat (20% Karb, 40% Protein, 40% Yağ)</option>
+                        <option value="highprotein">Yüksek Protein (30% Karb, 40% Protein, 30% Yağ)</option>
+                        <option value="keto">Ketojenik (5% Karb, 25% Protein, 70% Yağ)</option>
+                    </select>
+                </div>
+                <button onclick="calculateMacros()">Makro Hesapla</button>
+                <div id="macroResults"></div>
+            </div>
+        </div>
+
+        <!-- Su Takibi -->
+        <div id="su" class="tab-content">
+            <div class="card">
+                <h2>Günlük Su Takibi</h2>
+                <div class="form-group">
+                    <label>Kilo (kg):</label>
+                    <input type="number" id="waterWeight" placeholder="Örn: 70" min="1">
+                </div>
+                <button onclick="calculateWater()">Günlük Su İhtiyacını Hesapla</button>
+                <div id="waterResults"></div>
+                <div id="waterTracker"></div>
+                <div class="info-box">
+                    <p><strong>Not:</strong> Her bardak 250 ml kabul edilmektedir. Egzersiz yapıyorsanız veya sıcak havalarda ihtiyacınız artabilir.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- İdeal Kilo -->
+        <div id="ideal" class="tab-content">
+            <div class="card">
+                <h2>İdeal Kilo Hesaplama</h2>
+                <div class="grid-2">
+                    <div class="form-group">
+                        <label>Boy (cm):</label>
+                        <input type="number" id="idealHeight" placeholder="Örn: 175" min="1">
+                    </div>
+                    <div class="form-group">
+                        <label>Cinsiyet:</label>
+                        <div class="radio-group">
+                            <label class="radio-label">
+                                <input type="radio" name="idealGender" value="male" checked> Erkek
+                            </label>
+                            <label class="radio-label">
+                                <input type="radio" name="idealGender" value="female"> Kadın
+                            </label>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Mevcut Kilo (kg) (Opsiyonel):</label>
+                    <input type="number" id="currentWeight" placeholder="Örn: 70" min="1">
+                </div>
+                <button onclick="calculateIdealWeight()">İdeal Kilo Hesapla</button>
+                <div id="idealResults"></div>
+            </div>
+        </div>
+
+        <footer>
+            <p>&copy; 2025 Kalori Hesaplama Sitesi | Sağlıklı yaşam için tasarlandı</p>
+            <p style="font-size: 0.9em; margin-top: 10px;">Not: Bu hesaplamalar genel bilgilendirme amaçlıdır. Kişisel beslenme planı için diyetisyene danışınız.</p>
+        </footer>
+    </div>
+
+    <script>
+        let waterGlasses = 0;
+        let totalWaterNeeded = 0;
+
+        function openTab(tabName) {
+            const contents = document.querySelectorAll('.tab-content');
+            const buttons = document.querySelectorAll('.tab-button');
+            
+            contents.forEach(content => content.classList.remove('active'));
+            buttons.forEach(button => button.classList.remove('active'));
+            
+            document.getElementById(tabName).classList.add('active');
+            event.target.classList.add('active');
+        }
+
+        function calculateCalories() {
+            const age = parseInt(document.getElementById('age').value);
+            const weight = parseFloat(document.getElementById('weight').value);
+            const height = parseFloat(document.getElementById('height').value);
+            const activity = parseFloat(document.getElementById('activity').value);
+            const goal = parseInt(document.getElementById('goal').value);
+            const gender = document.querySelector('input[name="gender"]:checked').value;
+
+            if (!age || !weight || !height) {
+                alert('Lütfen tüm alanları doldurun!');
+                return;
+            }
+
+            let bmr;
+            if (gender === 'male') {
+                bmr = 10 * weight + 6.25 * height - 5 * age + 5;
+            } else {
+                bmr = 10 * weight + 6.25 * height - 5 * age - 161;
+            }
+
+            const tdee = Math.round(bmr * activity);
+            const targetCalories = tdee + goal;
+
+            const resultsHTML = `
+                <div class="results">
+                    <h3 style="color: #ffffff; margin-bottom: 20px;">Hesaplama Sonuçları</h3>
+                    <div class="result-item">
+                        <span class="result-label">Bazal Metabolizma Hızı (BMR):</span>
+                        <span class="result-value">${Math.round(bmr)} kcal</span>
+                    </div>
+                    <div class="result-item">
+                        <span class="result-label">Günlük Kalori İhtiyacı (TDEE):</span>
+                        <span class="result-value">${tdee} kcal</span>
+                    </div>
+                    <div class="result-item">
+                        <span class="result-label">Hedef Kalori:</span>
+                        <span class="result-value">${targetCalories} kcal</span>
+                    </div>
+                    <div class="info-box" style="margin-top: 20px;">
+                        <p><strong>Öneri:</strong> Hedefinize ulaşmak için günde ${targetCalories} kalori almanız önerilir.</p>
+                        ${goal < 0 ? '<p>Sağlıklı kilo kaybı için dengeli beslenme ve düzenli egzersiz önemlidir.</p>' : ''}
+                        ${goal > 0 ? '<p>Sağlıklı kilo alımı için protein ağırlıklı beslenme ve kuvvet antrenmanları yapabilirsiniz.</p>' : ''}
+                    </div>
+                </div>
+            `;
+
+            document.getElementById('calorieResults').innerHTML = resultsHTML;
+        }
+
+        function calculateBMI() {
+            const weight = parseFloat(document.getElementById('bmiWeight').value);
+            const height = parseFloat(document.getElementById('bmiHeight').value) / 100;
+
+            if (!weight || !height) {
+                alert('Lütfen kilo ve boy değerlerini girin!');
+                return;
+            }
+
+            const bmi = (weight / (height * height)).toFixed(1);
+            let category, color;
+
+            if (bmi < 18.5) {
+                category = 'Zayıf';
+                color = '#3d6bb3';
+            } else if (bmi < 25) {
+                category = 'Normal';
+                color = '#2a9d8f';
+            } else if (bmi < 30) {
+                category = 'Fazla Kilolu';
+                color = '#e9c46a';
+            } else {
+                category = 'Obez';
+                color = '#e76f51';
+            }
+
+            const resultsHTML = `
+                <div class="results">
+                    <h3 style="color: #ffffff; margin-bottom: 20px;">BMI Sonucu</h3>
+                    <div class="macro-circle" style="border-color: ${color}; margin: 30px auto;">
+                        <div class="macro-value" style="color: ${color};">${bmi}</div>
+                        <div class="macro-label">BMI Değeri</div>
+                    </div>
+                    <div class="result-item">
+                        <span class="result-label">Kategori:</span>
+                        <span class="result-value" style="color: ${color};">${category}</span>
+                    </div>
+                </div>
+            `;
+
+            document.getElementById('bmiResults').innerHTML = resultsHTML;
+        }
+
+        function calculateMacros() {
+            const calories = parseInt(document.getElementById('macroCalories').value);
+            const dietType = document.getElementById('dietType').value;
+
+            if (!calories) {
+                alert('Lütfen kalori değerini girin!');
+                return;
+            }
+
+            let ratios;
+            switch(dietType) {
+                case 'balanced':
+                    ratios = {carb: 40, protein: 30, fat: 30};
+                    break;
+                case 'lowcarb':
+                    ratios = {carb: 20, protein: 40, fat: 40};
+                    break;
+                case 'highprotein':
+                    ratios = {carb: 30, protein: 40, fat: 30};
+                    break;
+                case 'keto':
+                    ratios = {carb: 5, protein: 25, fat: 70};
+                    break;
+            }
+
+            const carbCal = calories * (ratios.carb / 100);
+            const proteinCal = calories * (ratios.protein / 100);
+            const fatCal = calories * (ratios.fat / 100);
+
+            const carbGrams = Math.round(carbCal / 4);
+            const proteinGrams = Math.round(proteinCal / 4);
+            const fatGrams = Math.round(fatCal / 9);
+
+            const resultsHTML = `
+                <div class="results">
+                    <h3 style="color: #ffffff; margin-bottom: 20px;">Günlük Makro Dağılımı</h3>
+                    <div class="result-item">
+                        <span class="result-label">Karbonhidrat (${ratios.carb}%):</span>
+                        <span class="result-value">${carbGrams}g</span>
+                    </div>
+                    <div class="result-item">
+                        <span class="result-label">Protein (${ratios.protein}%):</span>
+                        <span class="result-value">${proteinGrams}g</span>
+                    </div>
+                    <div class="result-item">
+                        <span class="result-label">Yağ (${ratios.fat}%):</span>
+                        <span class="result-value">${fatGrams}g</span>
+                    </div>
+                    <div class="info-box" style="margin-top: 20px;">
+                        <p><strong>Not:</strong> Bu değerler seçtiğiniz diyet tipine göre optimize edilmiştir.</p>
+                        <p>1g Karbonhidrat = 4 kcal | 1g Protein = 4 kcal | 1g Yağ = 9 kcal</p>
+                    </div>
+                </div>
+            `;
+
+            document.getElementById('macroResults').innerHTML = resultsHTML;
+        }
+
+        function calculateWater() {
+            const weight = parseFloat(document.getElementById('waterWeight').value);
+
+            if (!weight) {
+                alert('Lütfen kilo değerini girin!');
+                return;
+            }
+
+            const waterML = weight * 35;
+            totalWaterNeeded = Math.round(waterML / 250);
+            waterGlasses = 0;
+
+            let glassesHTML = '';
+            for (let i = 0; i < totalWaterNeeded; i++) {
+                glassesHTML += `<div class="water-glass" onclick="toggleWaterGlass(${i})" id="glass${i}"></div>`;
+            }
+
+            const resultsHTML = `
+                <div class="results">
+                    <h3 style="color: #ffffff; margin-bottom: 20px;">Su İhtiyacı Sonucu</h3>
+                    <div class="result-item">
+                        <span class="result-label">Günlük Su İhtiyacı:</span>
+                        <span class="result-value">${waterML} ml (${totalWaterNeeded} bardak)</span>
+                    </div>
+                    <div style="margin-top: 20px;">
+                        <p style="color: #d0d0d0; margin-bottom: 10px;"><strong>Bardakları tıklayarak su takibi yapın:</strong></p>
+                        <div class="water-tracker">
+                            ${glassesHTML}
+                        </div>
+                        <p style="color: #b0b0b0; margin-top: 15px;" id="waterProgress">İçilen: 0 / ${totalWaterNeeded} bardak</p>
+                    </div>
+                </div>
+            `;
+
+            document.getElementById('waterResults').innerHTML = resultsHTML;
+        }
+
+        function toggleWaterGlass(index) {
+            const glass = document.getElementById(`glass${index}`);
+            if (glass.classList.contains('filled')) {
+                glass.classList.remove('filled');
+                waterGlasses--;
+            } else {
+                glass.classList.add('filled');
+                waterGlasses++;
+            }
+            document.getElementById('waterProgress').textContent = `İçilen: ${waterGlasses} / ${totalWaterNeeded} bardak`;
+        }
+
+        function calculateIdealWeight() {
+            const height = parseFloat(document.getElementById('idealHeight').value);
+            const gender = document.querySelector('input[name="idealGender"]:checked').value;
+            const currentWeight = parseFloat(document.getElementById('currentWeight').value);
+
+            if (!height) {
+                alert('Lütfen boy değerini girin!');
+                return;
+            }
+
+            let idealWeight;
+            if (gender === 'male') {
+                idealWeight = 50 + 0.91 * (height - 152.4);
+            } else {
+                idealWeight = 45.5 + 0.91 * (height - 152.4);
+            }
+
+            const minHealthyWeight = Math.round(18.5 * Math.pow(height / 100, 2));
+            const maxHealthyWeight = Math.round(24.9 * Math.pow(height / 100, 2));
+
+            let comparisonHTML = '';
+            if (currentWeight) {
+                const difference = currentWeight - idealWeight;
+                if (Math.abs(difference) < 5) {
+                    comparisonHTML = `
+                        <div class="info-box" style="background: rgba(42, 157, 143, 0.2); border-color: #2a9d8f;">
+                            <p><strong>Harika!</strong> Mevcut kilonuz ideal kilonuza çok yakın.</p>
+                        </div>
+                    `;
+                } else if (difference > 0) {
+                    comparisonHTML = `
+                        <div class="info-box">
+                            <p><strong>Mevcut Durumunuz:</strong> İdeal kilonuzun ${Math.abs(Math.round(difference))} kg üzerindesiniz.</p>
+                            <p>Sağlıklı kilo kaybı için dengeli beslenme ve düzenli egzersiz yapabilirsiniz.</p>
+                        </div>
+                    `;
+                } else {
+                    comparisonHTML = `
+                        <div class="info-box">
+                            <p><strong>Mevcut Durumunuz:</strong> İdeal kilonuzun ${Math.abs(Math.round(difference))} kg altındasınız.</p>
+                            <p>Sağlıklı kilo almak için protein ağırlıklı beslenme önerilir.</p>
+                        </div>
+                    `;
+                }
+            }
+
+            const resultsHTML = `
+                <div class="results">
+                    <h3 style="color: #ffffff; margin-bottom: 20px;">İdeal Kilo Sonuçları</h3>
+                    <div class="result-item">
+                        <span class="result-label">İdeal Kilonuz (Devine Formülü):</span>
+                        <span class="result-value">${Math.round(idealWeight)} kg</span>
+                    </div>
+                    <div class="result-item">
+                        <span class="result-label">Sağlıklı Kilo Aralığı (BMI):</span>
+                        <span class="result-value">${minHealthyWeight} - ${maxHealthyWeight} kg</span>
+                    </div>
+                    ${comparisonHTML}
+                    <div class="info-box" style="margin-top: 20px;">
+                        <p><strong>Not:</strong> İdeal kilo, vücut yapınıza, kas kütlenize ve yaşam tarzınıza göre değişebilir.</p>
+                        <p>Sağlıklı kilo aralığında kalmak en önemli hedefiniz olmalıdır.</p>
+                    </div>
+                </div>
+            `;
+
+            document.getElementById('idealResults').innerHTML = resultsHTML;
+        }
+    </script>
+</body>
+</html>
