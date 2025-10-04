@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Zift Studio, yazılım geliştirme ve 3D tasarım alanında uzmanlaşmış bir stüdyodur.">
+    <meta name="keywords" content="yazılım, tasarım, 3D, web geliştirme, mobil uygulama, oyun geliştirme">
+    <title>Zift Studio - Shop</title>
+    <link rel="stylesheet" href="shop.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    
+</head> 
+
+    <!-- Mobile Menu Overlay -->
+    <div class="mobile-menu-overlay"></div>
+
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="logo">Zift Studio</div>
+            <ul class="nav-links">
+                <li><a href="index.html">Ana Sayfa</a></li>
+                <li><a href="developer.html">Developer</a></li>
+                <li><a href="create.html">Create</a></li>
+                <li><a href="shop.html" class="active">Shop</a></li>
+                <li><a href="#contact" data-section="contact">İletişim</a></li>
+            </ul>
+            <div class="nav-controls">
+                <button class="theme-toggle" title="Tema Değiştir">
+                    <i class="fas fa-moon"></i>
+                </button>
+                <button class="mobile-menu">
+                    <i class="fas fa-bars"></i>
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero" id="home">
+        <div class="hero-content">
+            <h1>Zift Shop</h1>
+            <p class="subtitle">Yazılım & 3D Tasarım Mağazası</p>
+            <div class="cta-buttons">
+                <a href="#services" class="btn btn-primary">Ürünlerimiz</a>
+                <a href="#contact" class="btn btn-secondary">İletişime Geç</a>
+            </div>
+        </div>
+    </section>
+   
+
+    <!-- Shop Section -->
+    <section class="shop-section" id="products">
+        <h2 class="section-title">Ürünlerimiz</h2>
+        <p class="section-subtitle">Profesyonel yazılım çözümleri ve yaratıcı tasarım ürünleri</p>
+
+        <!-- Filter Tabs -->
+        <div class="filter-tabs">
+            <div class="filter-tab active" data-filter="all">Tümü</div>
+            <div class="filter-tab" data-filter="software">Yazılım</div>
+            <div class="filter-tab" data-filter="design">Tasarım</div>
+        </div>
+
+        <!-- Products Grid -->
+        <div class="products-grid">
+            <!-- Yazılım Ürünleri -->
+            <div class="product-card" data-category="software">
+                <div class="product-image">
+                    <i class="fas fa-globe"></i>
+                    <div class="product-badge">Web</div>
+                    <div class="product-code">KOD: 001</div>
+                </div>
+                <div class="product-content">
+                    <h3 class="product-title">Modern Web Sitesi</h3>
+                    <p class="product-description">Responsive tasarım ile modern ve kullanıcı dostu web siteleri. SEO uyumlu ve hızlı yüklenen yapı.</p>
+                    <ul class="product-features">
+                        <li><i class="fas fa-check"></i> Responsive Tasarım</li>
+                        <li><i class="fas fa-check"></i> SEO Optimizasyonu</li>
+                        <li><i class="fas fa-check"></i> Admin Paneli</li>
+                        <li><i class="fas fa-check"></i> 1 Yıl Teknik Destek</li>
+                    </ul>
+                    <div class="product-footer">
+                        <div class="product-price">₺2.500</div>
+                        <button class="buy-btn" onclick="buyProduct('001', 'Modern Web Sitesi', '2500')">Satın Al</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="product-card" data-category="software">
+                <div class="product-image">
+                    <i class="fas fa-shopping-cart"></i>
+                    <div class="product-badge">E-Ticaret</div>
+                    <div class="product-code">KOD: 002</div>
+                </div>
+                <div class="product-content">
+                    <h3 class="product-title">E-Ticaret Sitesi</h3>
+                    <p class="product-description">Tam özellikli e-ticaret çözümü. Ödeme sistemi, stok takibi ve sipariş yönetimi dahil.</p>
+                    <ul class="product-features">
+                        <li><i class="fas fa-check"></i> Ürün Katalogu</li>
+                        <li><i class="fas fa-check"></i> Ödeme Entegrasyonu</li>
+                        <li><i class="fas fa-check"></i> Stok Yönetimi</li>
+                        <li><i class="fas fa-check"></i> Sipariş Takibi</li>
+                    </ul>
+                    <div class="product-footer">
+                        <div class="product-price">₺5.000</div>
+                        <button class="buy-btn" onclick="buyProduct('002', 'E-Ticaret Sitesi', '5000')">Satın Al</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="product-card" data-category="software">
+                <div class="product-image">
+                    <i class="fab fa-python"></i>
+                    <div class="product-badge">Python</div>
+                    <div class="product-code">KOD: 003</div>
+                </div>
+                <div class="product-content">
+                    <h3 class="product-title">Otomasyon Programları</h3>
+                    <p class="product-description">Python ile özel otomasyon çözümleri. Veri işleme, web scraping ve süreç otomasyonu.</p>
+                    <ul class="product-features">
+                        <li><i class="fas fa-check"></i> Özel Geliştirme</li>
+                        <li><i class="fas fa-check"></i> Veri İşleme</li>
+                        <li><i class="fas fa-check"></i> API Entegrasyonu</li>
+                        <li><i class="fas fa-check"></i> Kaynak Kodu Dahil</li>
+                    </ul>
+                    <div class="product-footer">
+                        <div class="product-price">₺1.500</div>
+                        <button class="buy-btn" onclick="buyProduct('003', 'Otomasyon Programları', '1500')">Satın Al</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="product-card" data-category="software">
+                <div class="product-image">
+                    <i class="fas fa-mobile-alt"></i>
+                    <div class="product-badge">Mobil</div>
+                    <div class="product-code">KOD: 004</div>
+                </div>
+                <div class="product-content">
+                    <h3 class="product-title">Mobil Uygulama</h3>
+                    <p class="product-description">Android ve iOS platformları için modern mobil uygulamalar. Native performans garantisi.</p>
+                    <ul class="product-features">
+                        <li><i class="fas fa-check"></i> Cross-Platform</li>
+                        <li><i class="fas fa-check"></i> Push Bildirimleri</li>
+                        <li><i class="fas fa-check"></i> Offline Çalışma</li>
+                        <li><i class="fas fa-check"></i> App Store Yayını</li>
+                    </ul>
+                    <div class="product-footer">
+                        <div class="product-price">₺7.500</div>
+                        <button class="buy-btn" onclick="buyProduct('004', 'Mobil Uygulama', '7500')">Satın Al</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tasarım Ürünleri -->
+            <div class="product-card" data-category="design">
+                <div class="product-image">
+                    <i class="fas fa-cube"></i>
+                    <div class="product-badge">3D</div>
+                </div>
+                <div class="product-content">
+                    <h3 class="product-title">3D Obje Tasarımı</h3>
+                    <p class="product-description">Yüksek kaliteli 3D modeller. Oyun, animasyon ve görselleştirme projeleriniz için.</p>
+                    <ul class="product-features">
+                        <li><i class="fas fa-check"></i> Yüksek Çözünürlük</li>
+                        <li><i class="fas fa-check"></i> Çoklu Format</li>
+                        <li><i class="fas fa-check"></i> UV Mapping</li>
+                        <li><i class="fas fa-check"></i> Texture Dahil</li>
+                    </ul>
+                    <div class="product-footer">
+                        <div class="product-price">₺800</div>
+                        <button class="buy-btn" onclick="contactForProduct('3D Obje Tasarımı')">İletişime Geç</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="product-card" data-category="design">
+                <div class="product-image">
+                    <i class="fas fa-palette"></i>
+                    <div class="product-badge">Grafik</div>
+                </div>
+                <div class="product-content">
+                    <h3 class="product-title">Görsel Tasarım</h3>
+                    <p class="product-description">Logo, poster, banner ve marka kimlik tasarımları. Yaratıcı ve profesyonel çözümler.</p>
+                    <ul class="product-features">
+                        <li><i class="fas fa-check"></i> Logo Tasarımı</li>
+                        <li><i class="fas fa-check"></i> Marka Kimliği</li>
+                        <li><i class="fas fa-check"></i> Print Hazır</li>
+                        <li><i class="fas fa-check"></i> Çoklu Format</li>
+                    </ul>
+                    <div class="product-footer">
+                        <div class="product-price">₺600</div>
+                        <button class="buy-btn" onclick="contactForProduct('Görsel Tasarım')">İletişime Geç</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="product-card" data-category="design">
+                <div class="product-image">
+                    <i class="fas fa-video"></i>
+                    <div class="product-badge">Video</div>
+                </div>
+                <div class="product-content">
+                    <h3 class="product-title">3D Animasyon</h3>
+                    <p class="product-description">Kısa 3D animasyon videoları. Ürün tanıtımları ve marka filmleriniz için profesyonel çözüm.</p>
+                    <ul class="product-features">
+                        <li><i class="fas fa-check"></i> 4K Kalite</li>
+                        <li><i class="fas fa-check"></i> Ses Efekti</li>
+                        <li><i class="fas fa-check"></i> Özel Senaryo</li>
+                        <li><i class="fas fa-check"></i> Revizyon Hakkı</li>
+                    </ul>
+                    <div class="product-footer">
+                        <div class="product-price">₺2.000</div>
+                        <button class="buy-btn" onclick="contactForProduct('3D Animasyon')">İletişime Geç</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="product-card" data-category="design">
+                <div class="product-image">
+                    <i class="fas fa-home"></i>
+                    <div class="product-badge">Mimari</div>
+                </div>
+                <div class="product-content">
+                    <h3 class="product-title">Mimari Görselleştirme</h3>
+                    <p class="product-description">Bina ve mekan tasarımlarınız için fotorealistik 3D görselleştirmeler.</p>
+                    <ul class="product-features">
+                        <li><i class="fas fa-check"></i> Fotorealistik</li>
+                        <li><i class="fas fa-check"></i> 360° Panorama</li>
+                        <li><i class="fas fa-check"></i> Işık Analizi</li>
+                        <li><i class="fas fa-check"></i> Malzeme Detayı</li>
+                    </ul>
+                    <div class="product-footer">
+                        <div class="product-price">₺1.200</div>
+                        <button class="buy-btn" onclick="contactForProduct('Mimari Görselleştirme')">İletişime Geç</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+ <!-- Contact Section -->
+    <section class="contact" id="contact">
+        <div class="container">
+            <h2 class="section-title">İletişime Geçin</h2>
+            <div class="contact-content">
+                <div class="contact-info">
+                    <h3>Projenizi Konuşalım</h3>
+                    <p>Hayal ettiğiniz projeyi birlikte hayata geçirelim. Yazılım geliştirme ve 3D tasarım konularında profesyonel destek için bizimle iletişime geçin.</p>
+                    <div class="social-links">
+                        <a href="https://www.instagram.com/zift.studio?igsh=MWNlMXEwcXd1ZTBmZQ==" target="_blank" aria-label="Instagram">
+                            <i class="fab fa-instagram"></i>
+                        </a>
+                        <a href="https://linkedin.com" target="_blank" aria-label="LinkedIn">
+                            <i class="fab fa-linkedin-in"></i>
+                        </a>
+                        <a href="https://github.com" target="_blank" aria-label="GitHub">
+                            <i class="fab fa-github"></i>
+                        </a>
+                    </div>
+                </div>
+
+                <form class="contact-form" action="php/contact.php" method="POST" id="contactForm">
+                    <div class="form-group">
+                        <label for="name">Ad Soyad</label>
+                        <input type="text" id="name" name="name" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="email">E-posta</label>
+                        <input type="email" id="email" name="email" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="project">Proje Türü</label>
+                        <select id="project" name="project" required>
+                            <option value="">Seçiniz</option>
+                            <option value="web">Web Sitesi</option>
+                            <option value="ecommerce">E-Ticaret Sitesi</option>
+                            <option value="mobile">Mobil Uygulama</option>
+                            <option value="python">Python Otomasyon</option>
+                            <option value="3d">3D Tasarım</option>
+                            <option value="graphic">Grafik Tasarım</option>
+                            <option value="animation">3D Animasyon</option>
+                            <option value="architecture">Mimari Görselleştirme</option>
+                            <option value="other">Diğer</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="message">Mesajınız</label>
+                        <textarea id="message" name="message" rows="5" required></textarea>
+                    </div>
+                    <button type="submit" class="btn btn-primary" style="width: 100%;">Gönder</button>
+                </form>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-container">
+            <!-- Logo ve Kısa Açıklama -->
+            <div class="footer-about">
+                <h2 class="footer-logo">Zift Studio</h2>
+                <p>Yenilikçi çözümlerle dijital dünyada yanınızdayız.</p>
+                <div class="footer-socials">
+                    <a href="#" aria-label="Facebook" class="social-link"><i class="fab fa-facebook-f"></i></a>
+                    <a href="#" aria-label="Twitter" class="social-link"><i class="fab fa-twitter"></i></a>
+                    <a href="https://www.instagram.com/zift.studio?igsh=MWNlMXEwcXd1ZTBmZQ==" aria-label="Instagram" class="social-link"><i class="fab fa-instagram"></i></a>
+                    <a href="#" aria-label="LinkedIn" class="social-link"><i class="fab fa-linkedin-in"></i></a>
+                </div>
+            </div>
+
+            <!-- Hızlı Linkler -->
+            <div class="footer-links">
+                <h3>Hızlı Linkler</h3>
+                <ul>
+                    <li><a href="#home">Ana Sayfa</a></li>
+                    <li><a href="#services">Hizmetler</a></li>
+                    <li><a href="#tools">Teknolojiler</a></li>
+                    <li><a href="#contact">İletişim</a></li>
+                    <li><a href="developer.html">Developer</a></li>
+                    <li><a href="create.html">Create</a></li>
+                    <li><a href="shop.html">Shop</a></li>
+                </ul>
+            </div>
+
+            <!-- İletişim Bilgileri -->
+            <div class="footer-contact">
+                <h3>İletişim</h3>
+                <p><i class="fas fa-map-marker-alt"></i> Konya, Türkiye</p>
+                <p><i class="fas fa-phone-alt"></i> +90 542 478 62 54</p>
+                <p><i class="fas fa-envelope"></i> muhammedalikitir.tr@gmail.com</p>
+            </div>
+        </div>
+
+        <div class="footer-bottom">
+            <p>© 2025 Zift Studio. Tüm hakları saklıdır.</p>
+        </div>
+    </footer>
+
+   <script src="shop.js"></script>
+</body>
+</html>
+
