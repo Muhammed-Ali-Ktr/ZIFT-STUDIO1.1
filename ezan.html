@@ -1,0 +1,595 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Zift Studio | Ezan Vakitleri</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='0.9em' font-size='90'>🌙</text></svg>">
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --bg-primary: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            --bg-secondary: #ffffff;
+            --card-bg: rgba(255, 255, 255, 0.95);
+            --text-primary: #2d3748;
+            --text-secondary: #4a5568;
+            --accent: #667eea;
+            --shadow: rgba(0, 0, 0, 0.1);
+            --border: rgba(0, 0, 0, 0.1);
+        }
+
+        [data-theme="dark"] {
+            --bg-primary: linear-gradient(135deg, #1a202c 0%, #2d3748 100%);
+            --bg-secondary: #1a202c;
+            --card-bg: rgba(45, 55, 72, 0.95);
+            --text-primary: #f7fafc;
+            --text-secondary: #e2e8f0;
+            --accent: #805ad5;
+            --shadow: rgba(0, 0, 0, 0.3);
+            --border: rgba(255, 255, 255, 0.1);
+        }
+
+        body {
+            font-family: 'Cairo', sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            min-height: 100vh;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.05'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+            opacity: 0.3;
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            animation: fadeInDown 0.8s ease;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px var(--shadow);
+            color: white;
+        }
+
+        .header .subtitle {
+            font-size: 1rem;
+            color: rgba(255, 255, 255, 0.9);
+            font-weight: 300;
+        }
+
+        .controls {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+            animation: fadeIn 1s ease;
+        }
+
+        .location-select, .theme-toggle {
+            padding: 12px 20px;
+            border-radius: 12px;
+            border: 2px solid var(--border);
+            background: var(--card-bg);
+            color: var(--text-primary);
+            font-family: 'Cairo', sans-serif;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 6px var(--shadow);
+        }
+
+        .location-select:hover, .theme-toggle:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px var(--shadow);
+        }
+
+        .theme-toggle {
+            padding: 12px 24px;
+            font-weight: 600;
+            background: var(--accent);
+            color: white;
+            border: none;
+        }
+
+        .info-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+            animation: fadeIn 1.2s ease;
+        }
+
+        .info-card {
+            background: var(--card-bg);
+            padding: 20px;
+            border-radius: 16px;
+            box-shadow: 0 8px 16px var(--shadow);
+            text-align: center;
+            transition: transform 0.3s ease;
+        }
+
+        .info-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .info-card h3 {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            margin-bottom: 10px;
+            font-weight: 400;
+        }
+
+        .info-card p {
+            font-size: 1.3rem;
+            font-weight: 600;
+            color: var(--accent);
+        }
+
+        .countdown-section {
+            background: var(--card-bg);
+            padding: 30px;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px var(--shadow);
+            text-align: center;
+            margin-bottom: 30px;
+            animation: fadeIn 1.4s ease;
+        }
+
+        .countdown-section h2 {
+            font-size: 1.5rem;
+            margin-bottom: 20px;
+            color: var(--text-primary);
+        }
+
+        .countdown {
+            font-size: 3rem;
+            font-weight: 700;
+            color: var(--accent);
+            text-shadow: 2px 2px 4px var(--shadow);
+        }
+
+        .prayer-times {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 20px;
+            animation: fadeInUp 1.6s ease;
+        }
+
+        .prayer-card {
+            background: var(--card-bg);
+            padding: 25px;
+            border-radius: 16px;
+            box-shadow: 0 8px 16px var(--shadow);
+            text-align: center;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .prayer-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: var(--accent);
+            transform: scaleX(0);
+            transition: transform 0.3s ease;
+        }
+
+        .prayer-card:hover::before {
+            transform: scaleX(1);
+        }
+
+        .prayer-card.active {
+            border: 2px solid var(--accent);
+            transform: scale(1.05);
+            box-shadow: 0 12px 24px var(--shadow);
+        }
+
+        .prayer-card.active::before {
+            transform: scaleX(1);
+        }
+
+        .prayer-card h3 {
+            font-size: 1.1rem;
+            margin-bottom: 15px;
+            color: var(--text-primary);
+            font-weight: 600;
+        }
+
+        .prayer-card p {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--accent);
+        }
+
+        .loading {
+            text-align: center;
+            padding: 60px 20px;
+            color: white;
+            font-size: 1.3rem;
+        }
+
+        .spinner {
+            border: 4px solid rgba(255, 255, 255, 0.3);
+            border-top: 4px solid white;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            animation: spin 1s linear infinite;
+            margin: 20px auto;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes fadeInDown {
+            from { opacity: 0; transform: translateY(-30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        .pulse {
+            animation: pulse 2s infinite;
+        }
+
+        footer {
+            text-align: center;
+            padding: 30px;
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 0.9rem;
+        }
+
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 2rem;
+            }
+
+            .countdown {
+                font-size: 2rem;
+            }
+
+            .prayer-times {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 480px) {
+            .header h1 {
+                font-size: 1.5rem;
+            }
+
+            .info-cards {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body data-theme="light">
+    <div class="container">
+        <div class="header">
+            <h1>🕌 Zift Studio | Ezan Vakitleri</h1>
+            <p class="subtitle">Konum tabanlı günlük namaz vakitleri</p>
+        </div>
+
+        <div class="controls">
+            <select class="location-select" id="citySelect">
+                <option value="">Şehir seçiniz...</option>
+            </select>
+            <button class="theme-toggle" id="themeToggle">🌙 Gece Modu</button>
+        </div>
+
+        <div id="content" class="loading">
+            <div class="spinner"></div>
+            <p>Konum bilgisi alınıyor...</p>
+        </div>
+    </div>
+
+    <footer>
+        <p>© 2025 Zift Studio - Veriler Aladhan API'den alınmaktadır</p>
+    </footer>
+
+    <script>
+        const cities = {
+            "Istanbul": { lat: 41.0082, lng: 28.9784 },
+            "Ankara": { lat: 39.9334, lng: 32.8597 },
+            "Izmir": { lat: 38.4237, lng: 27.1428 },
+            "Bursa": { lat: 40.1826, lng: 29.0665 },
+            "Antalya": { lat: 36.8969, lng: 30.7133 },
+            "Adana": { lat: 37.0000, lng: 35.3213 },
+            "Gaziantep": { lat: 37.0662, lng: 37.3833 },
+            "Konya": { lat: 37.8746, lng: 32.4932 },
+            "Mersin": { lat: 36.8121, lng: 34.6415 },
+            "Diyarbakir": { lat: 37.9144, lng: 40.2306 }
+        };
+
+        let currentPrayerTimes = null;
+        let countdownInterval = null;
+        let currentCity = "";
+
+        const themeToggle = document.getElementById('themeToggle');
+        const citySelect = document.getElementById('citySelect');
+        const content = document.getElementById('content');
+
+        // Şehir listesini doldur
+        Object.keys(cities).forEach(city => {
+            const option = document.createElement('option');
+            option.value = city;
+            option.textContent = city;
+            citySelect.appendChild(option);
+        });
+
+        // Tema değiştir
+        themeToggle.addEventListener('click', () => {
+            const currentTheme = document.body.getAttribute('data-theme');
+            const newTheme = currentTheme === 'light' ? 'dark' : 'light';
+            document.body.setAttribute('data-theme', newTheme);
+            themeToggle.textContent = newTheme === 'light' ? '🌙 Gece Modu' : '☀️ Gündüz Modu';
+            localStorage.setItem('theme', newTheme);
+            updateBackgroundByTime();
+        });
+
+        // Kayıtlı temayı yükle
+        const savedTheme = localStorage.getItem('theme') || 'light';
+        document.body.setAttribute('data-theme', savedTheme);
+        themeToggle.textContent = savedTheme === 'light' ? '🌙 Gece Modu' : '☀️ Gündüz Modu';
+
+        // Şehir değişikliği
+        citySelect.addEventListener('change', (e) => {
+            const city = e.target.value;
+            if (city && cities[city]) {
+                localStorage.setItem('selectedCity', city);
+                currentCity = city;
+                fetchPrayerTimes(cities[city].lat, cities[city].lng, city);
+            }
+        });
+
+        // Konum al
+        function getLocation() {
+            const savedCity = localStorage.getItem('selectedCity');
+            if (savedCity && cities[savedCity]) {
+                citySelect.value = savedCity;
+                currentCity = savedCity;
+                fetchPrayerTimes(cities[savedCity].lat, cities[savedCity].lng, savedCity);
+            } else if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(
+                    position => {
+                        const lat = position.coords.latitude;
+                        const lng = position.coords.longitude;
+                        fetchPrayerTimes(lat, lng);
+                    },
+                    error => {
+                        console.error('Konum alınamadı:', error);
+                        currentCity = "Istanbul";
+                        citySelect.value = "Istanbul";
+                        fetchPrayerTimes(cities["Istanbul"].lat, cities["Istanbul"].lng, "Istanbul");
+                    }
+                );
+            } else {
+                currentCity = "Istanbul";
+                citySelect.value = "Istanbul";
+                fetchPrayerTimes(cities["Istanbul"].lat, cities["Istanbul"].lng, "Istanbul");
+            }
+        }
+
+        // Namaz vakitlerini çek
+        async function fetchPrayerTimes(lat, lng, cityName = "") {
+            try {
+                const response = await fetch(`https://api.aladhan.com/v1/timings?latitude=${lat}&longitude=${lng}&method=13`);
+                const data = await response.json();
+                
+                if (data.code === 200) {
+                    currentPrayerTimes = data.data.timings;
+                    const date = data.data.date;
+                    const city = cityName || data.data.meta.timezone.split('/')[1].replace('_', ' ');
+                    
+                    if (!cityName) currentCity = city;
+                    
+                    displayPrayerTimes(currentPrayerTimes, date, city);
+                    startCountdown();
+                    updateBackgroundByTime();
+                }
+            } catch (error) {
+                content.innerHTML = '<p style="color: white;">❌ Veriler yüklenirken hata oluştu. Lütfen tekrar deneyin.</p>';
+                console.error('API Hatası:', error);
+            }
+        }
+
+        // Namaz vakitlerini göster
+        function displayPrayerTimes(timings, date, city) {
+            const prayers = [
+                { name: 'İmsak', key: 'Imsak', icon: '🌅' },
+                { name: 'Güneş', key: 'Sunrise', icon: '🌄' },
+                { name: 'Öğle', key: 'Dhuhr', icon: '☀️' },
+                { name: 'İkindi', key: 'Asr', icon: '🌤️' },
+                { name: 'Akşam', key: 'Maghrib', icon: '🌆' },
+                { name: 'Yatsı', key: 'Isha', icon: '🌙' }
+            ];
+
+            content.innerHTML = `
+                <div class="info-cards">
+                    <div class="info-card">
+                        <h3>📍 Şehir</h3>
+                        <p>${city}</p>
+                    </div>
+                    <div class="info-card">
+                        <h3>📅 Tarih</h3>
+                        <p>${date.gregorian.day} ${getMonthName(date.gregorian.month.number)} ${date.gregorian.year}</p>
+                    </div>
+                    <div class="info-card">
+                        <h3>🌙 Hicri Tarih</h3>
+                        <p>${date.hijri.day} ${date.hijri.month.ar} ${date.hijri.year}</p>
+                    </div>
+                </div>
+
+                <div class="countdown-section">
+                    <h2 id="nextPrayerName">Bir Sonraki Vakit</h2>
+                    <div class="countdown" id="countdown">--:--:--</div>
+                </div>
+
+                <div class="prayer-times" id="prayerCards">
+                    ${prayers.map(prayer => `
+                        <div class="prayer-card" data-prayer="${prayer.key}">
+                            <h3>${prayer.icon} ${prayer.name}</h3>
+                            <p>${timings[prayer.key]}</p>
+                        </div>
+                    `).join('')}
+                </div>
+            `;
+        }
+
+        // Geri sayım başlat
+        function startCountdown() {
+            if (countdownInterval) clearInterval(countdownInterval);
+
+            countdownInterval = setInterval(() => {
+                const now = new Date();
+                const currentTime = now.getHours() * 3600 + now.getMinutes() * 60 + now.getSeconds();
+
+                const prayers = ['Fajr', 'Sunrise', 'Dhuhr', 'Asr', 'Maghrib', 'Isha'];
+                const prayerKeys = ['Imsak', 'Sunrise', 'Dhuhr', 'Asr', 'Maghrib', 'Isha'];
+                const prayerNames = ['İmsak', 'Güneş', 'Öğle', 'İkindi', 'Akşam', 'Yatsı'];
+
+                let nextPrayer = null;
+                let nextPrayerName = '';
+                let nextPrayerKey = '';
+
+                for (let i = 0; i < prayerKeys.length; i++) {
+                    const time = currentPrayerTimes[prayerKeys[i]];
+                    const [hours, minutes] = time.split(':').map(Number);
+                    const prayerTime = hours * 3600 + minutes * 60;
+
+                    if (prayerTime > currentTime) {
+                        nextPrayer = prayerTime;
+                        nextPrayerName = prayerNames[i];
+                        nextPrayerKey = prayerKeys[i];
+                        break;
+                    }
+                }
+
+                // Eğer bugün için vakit kalmadıysa, yarının ilk vaktine geç
+                if (!nextPrayer) {
+                    const time = currentPrayerTimes['Imsak'];
+                    const [hours, minutes] = time.split(':').map(Number);
+                    nextPrayer = (24 * 3600) + (hours * 3600 + minutes * 60);
+                    nextPrayerName = 'İmsak';
+                    nextPrayerKey = 'Imsak';
+                }
+
+                const diff = nextPrayer - currentTime;
+                const hours = Math.floor(diff / 3600);
+                const minutes = Math.floor((diff % 3600) / 60);
+                const seconds = diff % 60;
+
+                document.getElementById('countdown').textContent = 
+                    `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+                document.getElementById('nextPrayerName').textContent = `${nextPrayerName} Vaktine Kalan Süre`;
+
+                // Aktif vakti işaretle
+                document.querySelectorAll('.prayer-card').forEach(card => {
+                    card.classList.remove('active', 'pulse');
+                    if (card.dataset.prayer === nextPrayerKey) {
+                        card.classList.add('active', 'pulse');
+                    }
+                });
+
+                // Vakit girdiğinde animasyon
+                if (diff === 0) {
+                    showPrayerNotification(nextPrayerName);
+                }
+            }, 1000);
+        }
+
+        // Vakit bildirimi
+        function showPrayerNotification(prayerName) {
+            if (Notification.permission === 'granted') {
+                new Notification('🕌 Ezan Vakti', {
+                    body: `${prayerName} vakti girmiştir`,
+                    icon: 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><text y="0.9em" font-size="90">🕌</text></svg>'
+                });
+            }
+        }
+
+        // Bildirim izni iste
+        if ('Notification' in window && Notification.permission === 'default') {
+            Notification.requestPermission();
+        }
+
+        // Zamana göre arka plan
+        function updateBackgroundByTime() {
+            const hour = new Date().getHours();
+            const body = document.body;
+            const theme = body.getAttribute('data-theme');
+
+            if (theme === 'light') {
+                if (hour >= 5 && hour < 12) {
+                    body.style.background = 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)';
+                } else if (hour >= 12 && hour < 18) {
+                    body.style.background = 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)';
+                } else {
+                    body.style.background = 'linear-gradient(135deg, #4e54c8 0%, #8f94fb 100%)';
+                }
+            }
+        }
+
+        // Ay ismi
+        function getMonthName(month) {
+            const months = ['Ocak', 'Şubat', 'Mart', 'Nisan', 'Mayıs', 'Haziran', 
+                          'Temmuz', 'Ağustos', 'Eylül', 'Ekim', 'Kasım', 'Aralık'];
+            return months[month - 1];
+        }
+
+        // Başlat
+        getLocation();
+    </script>
+</body>
+</html>
