@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Öğrenci Paneli - ZiftStudio</title>
+  <link rel="stylesheet" href="/student/styles.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+  <script defer src="/student/app.js"></script>
+</head>
+<body>
+  <div class="container">
+    <header class="header">
+      <div class="brand">ZiftStudio • Öğrenci</div>
+      <div class="actions">
+        <button id="themeToggle" class="btn ghost">Tema</button>
+        <button id="logoutBtn" class="btn danger">Çıkış</button>
+      </div>
+    </header>
+
+    <main>
+      <section id="authSection" class="card grid-2">
+        <div>
+          <h2>Giriş Yap</h2>
+          <form id="loginForm" class="form">
+            <input type="text" id="loginUsername" placeholder="Kullanıcı adı" required />
+            <input type="password" id="loginPassword" placeholder="Şifre" required />
+            <button class="btn primary" type="submit">Giriş</button>
+          </form>
+        </div>
+        <div>
+          <h2>Kayıt Ol</h2>
+          <form id="registerForm" class="form">
+            <input type="text" id="registerUsername" placeholder="Kullanıcı adı" required />
+            <input type="password" id="registerPassword" placeholder="Şifre" required />
+            <button class="btn" type="submit">Kayıt</button>
+          </form>
+          <div class="muted mt" id="publicStats">Toplam üye: -</div>
+        </div>
+      </section>
+
+      <section id="dashboard" class="hidden">
+        <div class="toolbar card">
+          <div class="row">
+            <button id="themeCycle" class="btn">Tema</button>
+            <button id="bgBtn" class="btn ghost">Arka Plan Resmi</button>
+            <select id="layoutSelect">
+              <option value="two">İki Sütun</option>
+              <option value="one">Tek Sütun</option>
+            </select>
+            <button id="customizeBtn" class="btn">Araçları Düzenle</button>
+          </div>
+          <div id="bgPicker" class="hidden mt">
+            <div class="row">
+              <button class="btn ghost bg-opt" data-bg="none">Resim Yok</button>
+              <button class="btn ghost bg-opt" data-bg="/image/object1.jpg">Resim 1</button>
+              <button class="btn ghost bg-opt" data-bg="/image/object2.jpg">Resim 2</button>
+              <button class="btn ghost bg-opt" data-bg="/image/ziftstudio-logo-1.png">Semboller</button>
+            </div>
+          </div>
+        </div>
+
+        <div id="widgets" class="widgets two">
+          <div class="widget" data-key="stats">
+            <div class="card">
+              <div class="widget-header"><h3>İstatistikler</h3><button class="hide-btn">Gizle</button></div>
+              <div class="grid-3">
+                <div class="stat-card"><div class="stat-title">Haftalık Süre</div><div id="statTotal" class="stat-value">0 dk</div></div>
+                <div class="stat-card"><div class="stat-title">En Çok Ders</div><div id="statTop" class="stat-value">-</div></div>
+                <div class="stat-card"><div class="stat-title">Bugün</div><div id="statToday" class="stat-value">0 dk</div></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="widget" data-key="records">
+            <div class="card">
+              <div class="widget-header"><h3>Günlük Kayıt</h3><button class="hide-btn">Gizle</button></div>
+              <form id="recordForm" class="form row">
+                <input type="text" id="subject" placeholder="Ders" required />
+                <input type="text" id="topic" placeholder="Konu" required />
+                <input type="number" id="minutes" placeholder="Süre (dk)" required />
+                <input type="date" id="date" required />
+                <input type="text" id="note" placeholder="Not (opsiyonel)" />
+                <button class="btn primary" type="submit">Ekle</button>
+              </form>
+              <div id="records" class="list"></div>
+            </div>
+          </div>
+
+          <div class="widget" data-key="planner">
+            <div class="card">
+              <div class="widget-header"><h3>Haftalık Plan</h3><button class="hide-btn">Gizle</button></div>
+              <div class="week-controls">
+                <button id="prevWeek" class="btn ghost">◀</button>
+                <div id="weekLabel"></div>
+                <button id="nextWeek" class="btn ghost">▶</button>
+                <button id="savePlan" class="btn">Kaydet</button>
+              </div>
+              <div class="planner-wrap"><div id="planner" class="planner"></div></div>
+            </div>
+          </div>
+
+          <div class="widget" data-key="calendar">
+            <div class="card">
+              <div class="widget-header"><h3>Takvim</h3><button class="hide-btn">Gizle</button></div>
+              <details id="calendarDetails" open>
+                <summary>Haftalık görünüm</summary>
+                <div class="weekbar" id="weekbar"></div>
+              </details>
+              <details>
+                <summary>Aylık görünüm</summary>
+                <div class="calendar" id="calendar"></div>
+              </details>
+            </div>
+          </div>
+
+          <div class="widget" data-key="pomodoro">
+            <div class="card">
+              <div class="widget-header"><h3>Pomodoro</h3><button class="hide-btn">Gizle</button></div>
+              <div class="pomodoro">
+                <div id="pomodoroTime" class="pomodoro-time">25:00</div>
+                <div class="row">
+                  <button id="pomodoroStart" class="btn primary">Başla</button>
+                  <button id="pomodoroPause" class="btn">Duraklat</button>
+                  <button id="pomodoroReset" class="btn danger">Sıfırla</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <footer class="card mt">
+          <h3>Diğer Araçlar</h3>
+          <div class="row linkbar">
+            <a class="btn ghost" href="/">Ana sayfa</a>
+            <a class="btn ghost" href="/design.html">Tasarım</a>
+            <a class="btn ghost" href="/shop.html">Mağaza</a>
+            <a class="btn ghost" href="/developer.html">Geliştirici</a>
+          </div>
+        </footer>
+      </section>
+    </main>
+    <div id="toast" class="toast hidden"></div>
+  </div>
+</body>
+</html>
+
+

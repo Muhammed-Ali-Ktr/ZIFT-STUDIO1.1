@@ -1,0 +1,45 @@
+{
+  "records": [
+    {
+      "id": "Ms3aV-HAm940M6BW7_nzX",
+      "subject": "Kimya",
+      "topic": "Mol Kavramı",
+      "minutes": 45,
+      "date": "2025-10-07",
+      "note": ""
+    }
+  ],
+  "plans": [
+    {
+      "id": "kewLlKUPR-5dqeFLEZ_Fd",
+      "weekStart": "2025-09-21",
+      "items": []
+    },
+    {
+      "id": "UqYb_Fe6k-Bo7Umqdk87E",
+      "weekStart": "2025-10-05",
+      "items": []
+    }
+  ],
+  "events": [
+    {
+      "id": "HC4lFuXEr639gnLKDa8o_",
+      "date": "2025-10-08",
+      "title": "DENEME",
+      "description": ""
+    }
+  ],
+  "profile": {
+    "hiddenWidgets": [],
+    "layout": "two",
+    "theme": "dark",
+    "widgetOrder": [
+      "stats",
+      "records",
+      "planner",
+      "calendar",
+      "pomodoro"
+    ],
+    "background": "/image/object1.jpg"
+  }
+}

@@ -1,0 +1,14 @@
+[
+  {
+    "id": "oZGJZ1h8P53gf3qNJPTIx",
+    "username": "admin",
+    "passwordHash": "$2a$10$.MXF9Y2dTxgJuXBqpLp3q.bqV/aPOuARNfZ4E3j07ezA1HpOlZheS",
+    "role": "admin"
+  },
+  {
+    "id": "Kyo9yY2CSXrRLR-ZcUnYY",
+    "username": "Muhammet Ali Kıtır",
+    "passwordHash": "$2a$10$7L6txs1M.0OCV6.t6a4FteSgSdczEQLnlqME0SkgY5nTkwtxOLXmy",
+    "role": "student"
+  }
+]
