@@ -1,0 +1,869 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hava Durumu - Modern & Profesyonel</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            transition: all 0.5s ease;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* Arka plan temaları */
+        body.clear-day { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
+        body.clear-night { background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%); }
+        body.clouds { background: linear-gradient(135deg, #bdc3c7 0%, #2c3e50 100%); }
+        body.rain { background: linear-gradient(135deg, #4b6cb7 0%, #182848 100%); }
+        body.snow { background: linear-gradient(135deg, #e6dada 0%, #274046 100%); }
+        body.thunderstorm { background: linear-gradient(135deg, #2c3e50 0%, #000000 100%); }
+        body.mist { background: linear-gradient(135deg, #606c88 0%, #3f4c6b 100%); }
+
+        /* Dark tema */
+        body.dark-theme {
+            background: linear-gradient(135deg, #0f2027 0%, #203a43 50%, #2c5364 100%);
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        /* Header */
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            margin-bottom: 30px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+        }
+
+        .logo {
+            font-size: 28px;
+            font-weight: 700;
+            color: white;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .controls {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+        }
+
+        .theme-toggle, .unit-toggle {
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            padding: 10px 20px;
+            border-radius: 50px;
+            color: white;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        .theme-toggle:hover, .unit-toggle:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: translateY(-2px);
+        }
+
+        /* Arama bölümü */
+        .search-section {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+        }
+
+        .search-box {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+
+        .search-box input {
+            flex: 1;
+            padding: 15px 25px;
+            border: none;
+            border-radius: 50px;
+            background: rgba(255, 255, 255, 0.9);
+            font-size: 16px;
+            font-family: 'Poppins', sans-serif;
+            outline: none;
+            transition: all 0.3s ease;
+        }
+
+        .search-box input:focus {
+            box-shadow: 0 0 20px rgba(255, 255, 255, 0.5);
+        }
+
+        .search-btn, .location-btn {
+            padding: 15px 30px;
+            border: none;
+            border-radius: 50px;
+            background: rgba(255, 255, 255, 0.3);
+            color: white;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        .search-btn:hover, .location-btn:hover {
+            background: rgba(255, 255, 255, 0.4);
+            transform: translateY(-2px);
+        }
+
+        /* Loading animasyonu */
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 50px;
+            color: white;
+            font-size: 24px;
+        }
+
+        .loading.active {
+            display: block;
+        }
+
+        .spinner {
+            border: 4px solid rgba(255, 255, 255, 0.3);
+            border-top: 4px solid white;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            animation: spin 1s linear infinite;
+            margin: 20px auto;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Ana hava durumu kartı */
+        .main-weather {
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(10px);
+            border-radius: 30px;
+            padding: 40px;
+            margin-bottom: 30px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            color: white;
+        }
+
+        .current-location {
+            font-size: 32px;
+            font-weight: 600;
+            margin-bottom: 10px;
+        }
+
+        .current-date {
+            font-size: 16px;
+            opacity: 0.8;
+            margin-bottom: 30px;
+        }
+
+        .current-weather-display {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+            align-items: center;
+        }
+
+        .temp-section {
+            text-align: center;
+        }
+
+        .weather-icon {
+            font-size: 120px;
+            margin-bottom: 20px;
+        }
+
+        .current-temp {
+            font-size: 72px;
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+
+        .feels-like {
+            font-size: 18px;
+            opacity: 0.8;
+        }
+
+        .weather-description {
+            font-size: 24px;
+            font-weight: 500;
+            text-transform: capitalize;
+            margin-top: 10px;
+        }
+
+        .weather-details {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+        }
+
+        .detail-item {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 20px;
+            border-radius: 15px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .detail-label {
+            font-size: 14px;
+            opacity: 0.7;
+            margin-bottom: 5px;
+        }
+
+        .detail-value {
+            font-size: 24px;
+            font-weight: 600;
+        }
+
+        /* Saatlik tahmin grafiği */
+        .hourly-forecast {
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(10px);
+            border-radius: 30px;
+            padding: 40px;
+            margin-bottom: 30px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            color: white;
+        }
+
+        .section-title {
+            font-size: 24px;
+            font-weight: 600;
+            margin-bottom: 30px;
+        }
+
+        .chart-container {
+            position: relative;
+            height: 300px;
+        }
+
+        /* 5 günlük tahmin */
+        .daily-forecast {
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(10px);
+            border-radius: 30px;
+            padding: 40px;
+            margin-bottom: 30px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            color: white;
+        }
+
+        .forecast-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+        }
+
+        .forecast-card {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 25px;
+            border-radius: 20px;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+
+        .forecast-card:hover {
+            transform: translateY(-5px);
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .forecast-day {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 15px;
+        }
+
+        .forecast-icon {
+            font-size: 60px;
+            margin: 15px 0;
+        }
+
+        .forecast-temp {
+            font-size: 24px;
+            font-weight: 600;
+            margin: 10px 0;
+        }
+
+        .forecast-desc {
+            font-size: 14px;
+            opacity: 0.8;
+            text-transform: capitalize;
+        }
+
+        .forecast-details {
+            margin-top: 15px;
+            display: flex;
+            justify-content: space-around;
+            font-size: 13px;
+        }
+
+        /* Güneş bilgileri */
+        .sun-info {
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(10px);
+            border-radius: 30px;
+            padding: 40px;
+            margin-bottom: 30px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            color: white;
+        }
+
+        .sun-times {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 30px;
+            margin-top: 20px;
+        }
+
+        .sun-item {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 30px;
+            border-radius: 20px;
+            text-align: center;
+        }
+
+        .sun-icon {
+            font-size: 60px;
+            margin-bottom: 15px;
+        }
+
+        .sun-label {
+            font-size: 16px;
+            opacity: 0.8;
+            margin-bottom: 10px;
+        }
+
+        .sun-time {
+            font-size: 32px;
+            font-weight: 600;
+        }
+
+        /* Responsive tasarım */
+        @media (max-width: 1024px) {
+            .current-weather-display {
+                grid-template-columns: 1fr;
+            }
+
+            .forecast-cards {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 768px) {
+            header {
+                flex-direction: column;
+                gap: 20px;
+            }
+
+            .controls {
+                flex-wrap: wrap;
+            }
+
+            .search-box {
+                flex-direction: column;
+            }
+
+            .weather-details {
+                grid-template-columns: 1fr;
+            }
+
+            .current-temp {
+                font-size: 56px;
+            }
+
+            .weather-icon {
+                font-size: 80px;
+            }
+
+            .forecast-cards {
+                grid-template-columns: 1fr;
+            }
+
+            .sun-times {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Error mesajı */
+        .error-message {
+            background: rgba(231, 76, 60, 0.9);
+            color: white;
+            padding: 15px 25px;
+            border-radius: 10px;
+            margin: 10px 0;
+            display: none;
+        }
+
+        .error-message.active {
+            display: block;
+        }
+    </style>
+</head>
+<body class="clear-day">
+    <div class="container">
+        <!-- Header -->
+        <header>
+            <div class="logo">
+                <span>🌤️</span>
+                <span>HavaDurumu Pro</span>
+            </div>
+            <div class="controls">
+                <button class="unit-toggle" onclick="toggleUnit()">°C / °F</button>
+                <button class="theme-toggle" onclick="toggleTheme()">🌙 Karanlık Tema</button>
+            </div>
+        </header>
+
+        <!-- Arama Bölümü -->
+        <div class="search-section">
+            <div class="search-box">
+                <input type="text" id="cityInput" placeholder="Şehir adı girin (örn: İstanbul, London, New York)...">
+                <button class="search-btn" onclick="searchCity()">🔍 Ara</button>
+                <button class="location-btn" onclick="getLocationWeather()">📍 Konumum</button>
+            </div>
+            <div class="error-message" id="errorMessage"></div>
+        </div>
+
+        <!-- Loading -->
+        <div class="loading" id="loading">
+            <div class="spinner"></div>
+            <p>Hava durumu yükleniyor...</p>
+        </div>
+
+        <!-- Ana Hava Durumu -->
+        <div class="main-weather" id="mainWeather" style="display: none;">
+            <div class="current-location" id="currentLocation"></div>
+            <div class="current-date" id="currentDate"></div>
+            <div class="current-weather-display">
+                <div class="temp-section">
+                    <div class="weather-icon" id="mainWeatherIcon"></div>
+                    <div class="current-temp" id="currentTemp"></div>
+                    <div class="feels-like" id="feelsLike"></div>
+                    <div class="weather-description" id="weatherDescription"></div>
+                </div>
+                <div class="weather-details" id="weatherDetails"></div>
+            </div>
+        </div>
+
+        <!-- Saatlik Tahmin Grafiği -->
+        <div class="hourly-forecast" id="hourlyForecast" style="display: none;">
+            <h2 class="section-title">📊 Saatlik Tahmin</h2>
+            <div class="chart-container">
+                <canvas id="hourlyChart"></canvas>
+            </div>
+        </div>
+
+        <!-- 5 Günlük Tahmin -->
+        <div class="daily-forecast" id="dailyForecast" style="display: none;">
+            <h2 class="section-title">📅 5 Günlük Tahmin</h2>
+            <div class="forecast-cards" id="forecastCards"></div>
+        </div>
+
+        <!-- Güneş Bilgileri -->
+        <div class="sun-info" id="sunInfo" style="display: none;">
+            <h2 class="section-title">☀️ Güneş Bilgileri</h2>
+            <div class="sun-times" id="sunTimes"></div>
+        </div>
+    </div>
+
+    <script>
+        // API Anahtarı - Kendi anahtarınızı buraya ekleyin
+        const API_KEY = 'YOUR_API_KEY'; // OpenWeatherMap'ten ücretsiz API key alabilirsiniz
+        const API_BASE = 'https://api.openweathermap.org/data/2.5';
+        
+        // Global değişkenler
+        let currentUnit = 'metric'; // metric = Celsius, imperial = Fahrenheit
+        let weatherData = null;
+        let hourlyChart = null;
+
+        // Hava durumu ikonları
+        const weatherIcons = {
+            '01d': '☀️', '01n': '🌙',
+            '02d': '⛅', '02n': '☁️',
+            '03d': '☁️', '03n': '☁️',
+            '04d': '☁️', '04n': '☁️',
+            '09d': '🌧️', '09n': '🌧️',
+            '10d': '🌦️', '10n': '🌧️',
+            '11d': '⛈️', '11n': '⛈️',
+            '13d': '❄️', '13n': '❄️',
+            '50d': '🌫️', '50n': '🌫️'
+        };
+
+        // Sayfa yüklendiğinde
+        window.onload = () => {
+            getLocationWeather();
+            updateDateTime();
+            setInterval(updateDateTime, 60000); // Her dakika güncelle
+        };
+
+        // Enter tuşu ile arama
+        document.getElementById('cityInput').addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') searchCity();
+        });
+
+        // Tarih ve saat güncelleme
+        function updateDateTime() {
+            const now = new Date();
+            const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit' };
+            document.getElementById('currentDate').textContent = now.toLocaleDateString('tr-TR', options);
+        }
+
+        // Konum ile hava durumu
+        function getLocationWeather() {
+            if (navigator.geolocation) {
+                showLoading(true);
+                navigator.geolocation.getCurrentPosition(
+                    position => {
+                        fetchWeatherByCoords(position.coords.latitude, position.coords.longitude);
+                    },
+                    error => {
+                        showError('Konum izni verilmedi. Lütfen şehir adı ile arama yapın.');
+                        showLoading(false);
+                    }
+                );
+            } else {
+                showError('Tarayıcınız konum özelliğini desteklemiyor.');
+            }
+        }
+
+        // Şehir arama
+        function searchCity() {
+            const city = document.getElementById('cityInput').value.trim();
+            if (!city) {
+                showError('Lütfen bir şehir adı girin.');
+                return;
+            }
+            showLoading(true);
+            fetchWeatherByCity(city);
+        }
+
+        // Koordinatlara göre hava durumu çek
+        async function fetchWeatherByCoords(lat, lon) {
+            try {
+                const response = await fetch(
+                    `${API_BASE}/weather?lat=${lat}&lon=${lon}&appid=${API_KEY}&units=${currentUnit}&lang=tr`
+                );
+                if (!response.ok) throw new Error('Veri alınamadı');
+                const data = await response.json();
+                await fetchForecastData(lat, lon);
+                displayWeather(data);
+            } catch (error) {
+                showError('Hava durumu bilgisi alınamadı. API anahtarınızı kontrol edin.');
+                showLoading(false);
+            }
+        }
+
+        // Şehir adına göre hava durumu çek
+        async function fetchWeatherByCity(city) {
+            try {
+                const response = await fetch(
+                    `${API_BASE}/weather?q=${city}&appid=${API_KEY}&units=${currentUnit}&lang=tr`
+                );
+                if (!response.ok) throw new Error('Şehir bulunamadı');
+                const data = await response.json();
+                await fetchForecastData(data.coord.lat, data.coord.lon);
+                displayWeather(data);
+            } catch (error) {
+                showError('Şehir bulunamadı. Lütfen geçerli bir şehir adı girin.');
+                showLoading(false);
+            }
+        }
+
+        // Tahmin verilerini çek
+        async function fetchForecastData(lat, lon) {
+            try {
+                const response = await fetch(
+                    `${API_BASE}/forecast?lat=${lat}&lon=${lon}&appid=${API_KEY}&units=${currentUnit}&lang=tr`
+                );
+                if (!response.ok) throw new Error('Tahmin verisi alınamadı');
+                const data = await response.json();
+                displayForecast(data);
+                displayHourlyChart(data);
+            } catch (error) {
+                console.error('Tahmin hatası:', error);
+            }
+        }
+
+        // Ana hava durumunu göster
+        function displayWeather(data) {
+            weatherData = data;
+            
+            // Arka plan temasını değiştir
+            changeBackgroundTheme(data.weather[0].main.toLowerCase());
+            
+            // Konum
+            document.getElementById('currentLocation').textContent = `${data.name}, ${data.sys.country}`;
+            
+            // Sıcaklık
+            const tempUnit = currentUnit === 'metric' ? '°C' : '°F';
+            document.getElementById('currentTemp').textContent = `${Math.round(data.main.temp)}${tempUnit}`;
+            document.getElementById('feelsLike').textContent = `Hissedilen: ${Math.round(data.main.feels_like)}${tempUnit}`;
+            
+            // İkon ve açıklama
+            document.getElementById('mainWeatherIcon').textContent = weatherIcons[data.weather[0].icon] || '🌤️';
+            document.getElementById('weatherDescription').textContent = data.weather[0].description;
+            
+            // Detaylar
+            const details = `
+                <div class="detail-item">
+                    <div class="detail-label">💨 Rüzgar Hızı</div>
+                    <div class="detail-value">${data.wind.speed} ${currentUnit === 'metric' ? 'm/s' : 'mph'}</div>
+                </div>
+                <div class="detail-item">
+                    <div class="detail-label">💧 Nem</div>
+                    <div class="detail-value">${data.main.humidity}%</div>
+                </div>
+                <div class="detail-item">
+                    <div class="detail-label">🌡️ Basınç</div>
+                    <div class="detail-value">${data.main.pressure} hPa</div>
+                </div>
+                <div class="detail-item">
+                    <div class="detail-label">☁️ Bulutluluk</div>
+                    <div class="detail-value">${data.clouds.all}%</div>
+                </div>
+                <div class="detail-item">
+                    <div class="detail-label">👁️ Görüş Mesafesi</div>
+                    <div class="detail-value">${(data.visibility / 1000).toFixed(1)} km</div>
+                </div>
+                <div class="detail-item">
+                    <div class="detail-label">🌍 Koordinatlar</div>
+                    <div class="detail-value" style="font-size: 14px;">${data.coord.lat.toFixed(2)}, ${data.coord.lon.toFixed(2)}</div>
+                </div>
+            `;
+            document.getElementById('weatherDetails').innerHTML = details;
+            
+            // Güneş bilgileri
+            displaySunInfo(data);
+            
+            // Göster
+            document.getElementById('mainWeather').style.display = 'block';
+            document.getElementById('sunInfo').style.display = 'block';
+            showLoading(false);
+        }
+
+        // 5 günlük tahmini göster
+        function displayForecast(data) {
+            const dailyData = {};
+            
+            // Günlük verileri grupla
+            data.list.forEach(item => {
+                const date = new Date(item.dt * 1000).toLocaleDateString('tr-TR');
+                if (!dailyData[date]) {
+                    dailyData[date] = {
+                        temps: [],
+                        humidity: [],
+                        wind: [],
+                        weather: item.weather[0],
+                        icon: item.weather[0].icon
+                    };
+                }
+                dailyData[date].temps.push(item.main.temp);
+                dailyData[date].humidity.push(item.main.humidity);
+                dailyData[date].wind.push(item.wind.speed);
+            });
+            
+            // İlk 5 günü al
+            const days = Object.keys(dailyData).slice(0, 5);
+            const tempUnit = currentUnit === 'metric' ? '°C' : '°F';
+            const windUnit = currentUnit === 'metric' ? 'm/s' : 'mph';
+            
+            let cardsHTML = '';
+            days.forEach(date => {
+                const dayData = dailyData[date];
+                const avgTemp = Math.round(dayData.temps.reduce((a, b) => a + b) / dayData.temps.length);
+                const maxTemp = Math.round(Math.max(...dayData.temps));
+                const minTemp = Math.round(Math.min(...dayData.temps));
+                const avgHumidity = Math.round(dayData.humidity.reduce((a, b) => a + b) / dayData.humidity.length);
+                const avgWind = (dayData.wind.reduce((a, b) => a + b) / dayData.wind.length).toFixed(1);
+                
+                cardsHTML += `
+                    <div class="forecast-card">
+                        <div class="forecast-day">${date}</div>
+                        <div class="forecast-icon">${weatherIcons[dayData.icon] || '🌤️'}</div>
+                        <div class="forecast-temp">${maxTemp}° / ${minTemp}°</div>
+                        <div class="forecast-desc">${dayData.weather.description}</div>
+                        <div class="forecast-details">
+                            <div>💧 ${avgHumidity}%</div>
+                            <div>💨 ${avgWind} ${windUnit}</div>
+                        </div>
+                    </div>
+                `;
+            });
+            
+            document.getElementById('forecastCards').innerHTML = cardsHTML;
+            document.getElementById('dailyForecast').style.display = 'block';
+        }
+
+        // Saatlik grafik
+        function displayHourlyChart(data) {
+            const hours = data.list.slice(0, 8); // İlk 24 saat (3 saatlik aralıklarla)
+            const labels = hours.map(h => new Date(h.dt * 1000).toLocaleTimeString('tr-TR', { hour: '2-digit', minute: '2-digit' }));
+            const temps = hours.map(h => Math.round(h.main.temp));
+            
+            if (hourlyChart) {
+                hourlyChart.destroy();
+            }
+            
+            const ctx = document.getElementById('hourlyChart').getContext('2d');
+            hourlyChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: `Sıcaklık (${currentUnit === 'metric' ? '°C' : '°F'})`,
+                        data: temps,
+                        borderColor: 'rgba(255, 255, 255, 0.8)',
+                        backgroundColor: 'rgba(255, 255, 255, 0.2)',
+                        borderWidth: 3,
+                        tension: 0.4,
+                        fill: true,
+                        pointRadius: 6,
+                        pointHoverRadius: 8,
+                        pointBackgroundColor: 'white'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            labels: { color: 'white', font: { size: 14, family: 'Poppins' } }
+                        }
+                    },
+                    scales: {
+                        y: {
+                            ticks: { color: 'white', font: { size: 12 } },
+                            grid: { color: 'rgba(255, 255, 255, 0.1)' }
+                        },
+                        x: {
+                            ticks: { color: 'white', font: { size: 12 } },
+                            grid: { color: 'rgba(255, 255, 255, 0.1)' }
+                        }
+                    }
+                }
+            });
+            
+            document.getElementById('hourlyForecast').style.display = 'block';
+        }
+
+        // Güneş bilgileri
+        function displaySunInfo(data) {
+            const sunrise = new Date(data.sys.sunrise * 1000).toLocaleTimeString('tr-TR', { hour: '2-digit', minute: '2-digit' });
+            const sunset = new Date(data.sys.sunset * 1000).toLocaleTimeString('tr-TR', { hour: '2-digit', minute: '2-digit' });
+            
+            document.getElementById('sunTimes').innerHTML = `
+                <div class="sun-item">
+                    <div class="sun-icon">🌅</div>
+                    <div class="sun-label">Gün Doğumu</div>
+                    <div class="sun-time">${sunrise}</div>
+                </div>
+                <div class="sun-item">
+                    <div class="sun-icon">🌇</div>
+                    <div class="sun-label">Gün Batımı</div>
+                    <div class="sun-time">${sunset}</div>
+                </div>
+            `;
+        }
+
+        // Arka plan teması değiştir
+        function changeBackgroundTheme(weather) {
+            const body = document.body;
+            body.className = ''; // Tüm sınıfları temizle
+            
+            const hour = new Date().getHours();
+            const isNight = hour < 6 || hour > 20;
+            
+            if (weather.includes('clear')) {
+                body.classList.add(isNight ? 'clear-night' : 'clear-day');
+            } else if (weather.includes('cloud')) {
+                body.classList.add('clouds');
+            } else if (weather.includes('rain') || weather.includes('drizzle')) {
+                body.classList.add('rain');
+            } else if (weather.includes('snow')) {
+                body.classList.add('snow');
+            } else if (weather.includes('thunderstorm')) {
+                body.classList.add('thunderstorm');
+            } else if (weather.includes('mist') || weather.includes('fog') || weather.includes('haze')) {
+                body.classList.add('mist');
+            } else {
+                body.classList.add('clear-day');
+            }
+        }
+
+        // Birim değiştir (°C / °F)
+        function toggleUnit() {
+            currentUnit = currentUnit === 'metric' ? 'imperial' : 'metric';
+            if (weatherData) {
+                const lat = weatherData.coord.lat;
+                const lon = weatherData.coord.lon;
+                showLoading(true);
+                fetchWeatherByCoords(lat, lon);
+            }
+        }
+
+        // Tema değiştir
+        function toggleTheme() {
+            const body = document.body;
+            const btn = document.querySelector('.theme-toggle');
+            
+            if (body.style.background.includes('0f2027')) {
+                // Eski temaya dön
+                if (weatherData) {
+                    changeBackgroundTheme(weatherData.weather[0].main.toLowerCase());
+                }
+                btn.textContent = '🌙 Karanlık Tema';
+            } else {
+                // Karanlık tema
+                body.style.background = 'linear-gradient(135deg, #0f2027 0%, #203a43 50%, #2c5364 100%)';
+                btn.textContent = '☀️ Aydınlık Tema';
+            }
+        }
+
+        // Loading göster/gizle
+        function showLoading(show) {
+            document.getElementById('loading').classList.toggle('active', show);
+            if (!show) {
+                document.getElementById('errorMessage').classList.remove('active');
+            }
+        }
+
+        // Hata mesajı göster
+        function showError(message) {
+            const errorDiv = document.getElementById('errorMessage');
+            errorDiv.textContent = message;
+            errorDiv.classList.add('active');
+            setTimeout(() => {
+                errorDiv.classList.remove('active');
+            }, 5000);
+        }
+    </script>
+</body>
+</html>
