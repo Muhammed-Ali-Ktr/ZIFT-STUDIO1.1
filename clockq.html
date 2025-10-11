@@ -1,0 +1,506 @@
+<!doctype html>
+<html lang="tr">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Zift Studio — Modern Saat</title>
+  <style>
+    /* ----------------------
+       Temalar ve genel ayarlar
+       ----------------------*/
+    :root{
+      --bg: #000000;
+      --fg: #ffffff;
+      --accent: #ff3b30; /* kırmızı saniye */
+      --muted: rgba(255,255,255,0.15);
+      --glass: rgba(255,255,255,0.04);
+      --hand-hour-width: 10px;
+      --hand-minute-width: 6px;
+      --hand-second-width: 6px;
+      --digital-size: 28px;
+      --number-size: 26px;
+    }
+
+    [data-theme="white"]{
+      --bg: #ffffff;
+      --fg: #000000;
+      --accent: #e60000;
+      --muted: rgba(0,0,0,0.12);
+      --glass: rgba(0,0,0,0.03);
+    }
+    [data-theme="blue"]{
+      --bg: #03162b;
+      --fg: #d9eefb;
+      --accent: #4fc3f7;
+      --muted: rgba(223,238,249,0.08);
+      --glass: rgba(255,255,255,0.02);
+    }
+    [data-theme="green"]{
+      --bg: #07160a;
+      --fg: #dff6e1;
+      --accent: #6ee7b7;
+      --muted: rgba(220,250,230,0.06);
+      --glass: rgba(255,255,255,0.02);
+    }
+
+    /* Reset ve gövde */
+    *{box-sizing:border-box}
+    html,body{height:100%;}
+    body{
+      margin:0;
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+      background:var(--bg);
+      color:var(--fg);
+      -webkit-font-smoothing:antialiased;
+      -moz-osx-font-smoothing:grayscale;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      padding:24px;
+    }
+
+    /* Sayfa kartı */
+    .page{
+      width:min(980px, 96vw);
+      max-width:980px;
+      background:linear-gradient(180deg,var(--glass), transparent);
+      border-radius:16px;
+      padding:28px;
+      display:grid;
+      grid-template-columns: 1fr 360px;
+      gap:20px;
+      align-items:center;
+      box-shadow: 0 8px 30px rgba(0,0,0,0.45);
+    }
+
+    /* Saat bölümü (büyük daire) */
+    .clock-wrap{
+      position:relative;
+      width:100%;
+      height: min(520px, 70vh);
+      display:flex;
+      align-items:center;
+      justify-content:center;
+    }
+
+    .clock{
+      --size: min(540px, 68vh);
+      width:var(--size);
+      height:var(--size);
+      border-radius:50%;
+      position:relative;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      background:transparent;
+    }
+
+    /* Yüzey çizgileri ve işaretler */
+    .dial{
+      position:absolute; inset:0; border-radius:50%;
+      display:block;
+      padding:22px;
+    }
+
+    .tick{position:absolute; left:50%; transform-origin:0 50%;}
+    .tick .line{height:6px; width:8px; background:var(--fg); border-radius:4px; opacity:0.95}
+    .tick.minor .line{height:3px; width:4px; opacity:0.45}
+
+    /* saat sayıları */
+    .numbers{position:absolute; inset:0; display:block; pointer-events:none}
+    .numbers .num{
+      position:absolute; left:50%; top:10%; transform:translate(-50%, -50%);
+      font-weight:300; font-size:var(--number-size); opacity:0.92; color:var(--fg);
+    }
+
+    /* Akıllı merkez: analog akrep/yelkovan/saniye */
+    .hands{position:absolute; inset:0; display:flex; align-items:center; justify-content:center}
+
+    .hand{position:absolute; left:50%; top:50%; transform-origin:50% 100%; transform:translate(-50%,-100%) rotate(0deg); border-radius:10px}
+    .hand.hour{width:calc(var(--size) * 0.22); height:var(--hand-hour-width); background:var(--fg); transform-origin:12% 50%; box-shadow:0 2px 6px rgba(0,0,0,0.2)}
+    .hand.minute{width:calc(var(--size) * 0.34); height:var(--hand-minute-width); background:var(--fg); transform-origin:12% 50%}
+    .hand.second{width:calc(var(--size) * 0.56); height:var(--hand-second-width); background:var(--accent); border-radius:6px}
+
+    .pivot{position:absolute; width:18px; height:18px; border-radius:50%; left:50%; top:50%; transform:translate(-50%,-50%); background:var(--fg); box-shadow:0 2px 8px rgba(0,0,0,0.35)}
+
+    /* Dijital ve tarih alanı */
+    .digital-top{position:absolute; top:14px; left:50%; transform:translateX(-50%); text-align:center; font-weight:600}
+    .digital-top .time{font-size:var(--digital-size); letter-spacing:1px}
+    .date-left{position:absolute; left:22px; top:calc(50% - 18px); font-weight:500; opacity:0.95}
+    .weekday-bottom{position:absolute; bottom:34px; left:50%; transform:translateX(-50%); text-align:center}
+    .weekday-bottom .daynum{font-size:44px; font-weight:300}
+
+    /* Sağ panel: kontrol ve alarm listesi */
+    .panel{padding:16px; border-radius:12px; background:linear-gradient(180deg, transparent, var(--glass)); min-height:320px}
+    .controls{display:flex; gap:8px; flex-wrap:wrap; margin-bottom:12px}
+    .btn{background:transparent; border:1px solid var(--muted); color:var(--fg); padding:8px 12px; border-radius:10px; cursor:pointer; font-weight:600}
+    .btn.fill{background:var(--fg); color:var(--bg)}
+
+    .theme-select{display:flex; gap:8px}
+    .theme-dot{width:36px; height:36px; border-radius:8px; border:1px solid rgba(255,255,255,0.06); cursor:pointer; display:flex; align-items:center; justify-content:center}
+
+    .alarm-form{margin-top:12px; display:grid; gap:8px}
+    .alarm-form input, .alarm-form select{padding:8px; border-radius:8px; border:1px solid var(--muted); background:transparent; color:var(--fg)}
+    .alarms-list{margin-top:10px}
+    .alarm-item{display:flex; align-items:center; justify-content:space-between; gap:8px; padding:8px; border-radius:8px; border:1px dashed var(--muted)}
+
+    /* küçük ekranlarda düzen */
+    @media(max-width:880px){
+      .page{grid-template-columns:1fr;}
+      .panel{order:2}
+      .clock-wrap{order:1}
+      .digital-top .time{font-size:22px}
+    }
+
+    /* Geçişler */
+    .hand, .pivot, .digital-top, .date-left, .weekday-bottom{transition:transform 450ms cubic-bezier(.2,.9,.3,1), background 300ms, color 300ms}
+    .tick .line, .numbers .num{transition:opacity 300ms, transform 250ms}
+
+    /* Küçük stil düzeltmeleri */
+    input[type="time"]{padding:8px}
+    .muted{opacity:0.7; font-size:13px}
+
+  </style>
+</head>
+<body data-theme="black">
+  <div class="page" id="app">
+    <div class="clock-wrap">
+      <div class="clock" id="clock">
+        <div class="dial" id="dial"></div>
+
+        <div class="numbers" id="nums"></div>
+
+        <div class="hands">
+          <div class="hand hour" id="hour"></div>
+          <div class="hand minute" id="minute"></div>
+          <div class="hand second" id="second"></div>
+          <div class="pivot"></div>
+        </div>
+
+        <div class="digital-top">
+          <div class="time" id="digitalTime">00:00</div>
+          <div class="muted" id="digitalSec">--:--</div>
+        </div>
+
+        <div class="date-left" id="dateLeft">9 AUG</div>
+
+        <div class="weekday-bottom">
+          <div class="muted">GÜN</div>
+          <div class="daynum" id="dayNum">6</div>
+          <div class="muted" id="weekday">TUE</div>
+        </div>
+
+      </div>
+    </div>
+
+    <aside class="panel">
+      <div style="display:flex; align-items:center; justify-content:space-between; gap:8px; margin-bottom:12px">
+        <div>
+          <div style="font-weight:700; font-size:18px">Zift Studio — Saat</div>
+          <div class="muted" style="font-size:13px">Analog + Dijital — Tek dosya</div>
+        </div>
+        <div style="display:flex; gap:8px">
+          <button class="btn" id="toggleMode">Analog / Dijital</button>
+        </div>
+      </div>
+
+      <div class="controls">
+        <div style="display:flex; gap:8px; align-items:center">
+          <div class="muted" style="font-size:13px">Tema:</div>
+          <div class="theme-select">
+            <div class="theme-dot" data-theme="black" title="Siyah" style="background:var(--bg); border:1px solid var(--muted)">●</div>
+            <div class="theme-dot" data-theme="white" title="Beyaz" style="background:linear-gradient(135deg,#fff,#f0f0f0); color:#111">☼</div>
+            <div class="theme-dot" data-theme="blue" title="Mavi" style="background:#04304a">☽</div>
+            <div class="theme-dot" data-theme="green" title="Yeşil" style="background:#013018">♣</div>
+          </div>
+        </div>
+
+        <button class="btn" id="fullscreenBtn">Tam Ekran</button>
+        <button class="btn" id="compactBtn">Temiz Görünüm</button>
+      </div>
+
+      <hr style="opacity:0.06;border:none;height:1px;margin:12px 0;background:var(--muted)">
+
+      <div style="font-weight:700">Alarmlar</div>
+      <div class="alarm-form">
+        <label class="muted">Alarm zamanı</label>
+        <input type="time" id="alarmTime" />
+        <label class="muted">Tekrar</label>
+        <select id="alarmRepeat">
+          <option value="once">Tek seferlik</option>
+          <option value="daily">Her gün</option>
+          <option value="weekdays">Hafta içi (Pzt-Cuma)</option>
+        </select>
+        <div style="display:flex; gap:8px">
+          <button class="btn fill" id="setAlarm">Alarm Kur</button>
+          <button class="btn" id="stopAll">Tümünü Durdur</button>
+        </div>
+      </div>
+
+      <div class="alarms-list" id="alarmsList" aria-live="polite" style="margin-top:12px">
+        <!-- alarm öğeleri buraya eklenecek -->
+      </div>
+
+      <div style="margin-top:14px" class="muted">Not: Alarm çalışırken tarayıcı sekmesi arka planda olsa bile ses çalabilir fakat bazı mobil tarayıcılarda kısıtlamalar olabilir.</div>
+
+    </aside>
+  </div>
+
+  <script>
+    /* ----------------------
+       JavaScript: Fonksiyonellik
+       ----------------------*/
+    const root = document.body;
+    const dial = document.getElementById('dial');
+    const nums = document.getElementById('nums');
+    const hourHand = document.getElementById('hour');
+    const minuteHand = document.getElementById('minute');
+    const secondHand = document.getElementById('second');
+    const digitalTime = document.getElementById('digitalTime');
+    const digitalSec = document.getElementById('digitalSec');
+    const dateLeft = document.getElementById('dateLeft');
+    const dayNum = document.getElementById('dayNum');
+    const weekday = document.getElementById('weekday');
+
+    const toggleModeBtn = document.getElementById('toggleMode');
+    const fullscreenBtn = document.getElementById('fullscreenBtn');
+    const compactBtn = document.getElementById('compactBtn');
+
+    const alarmTimeInput = document.getElementById('alarmTime');
+    const alarmRepeat = document.getElementById('alarmRepeat');
+    const setAlarmBtn = document.getElementById('setAlarm');
+    const alarmsList = document.getElementById('alarmsList');
+    const stopAllBtn = document.getElementById('stopAll');
+
+    let showDigital = true;
+    let alarms = JSON.parse(localStorage.getItem('zift_alarms')||'[]');
+    let audioCtx = null;
+    let activeAlarm = null;
+
+    /* Saat yüzeyini ve işaretleri çiz */
+    function drawDial(){
+      const size = Math.min(540, window.innerHeight*0.68);
+      dial.innerHTML = '';
+      nums.innerHTML = '';
+
+      // dakika işaretleri
+      for(let i=0;i<60;i++){
+        const tick = document.createElement('div');
+        tick.className = 'tick ' + (i%5 === 0 ? 'major' : 'minor');
+        const line = document.createElement('div');
+        line.className='line';
+        tick.appendChild(line);
+        const angle = i*6;
+        tick.style.transform = `rotate(${angle}deg) translateX(${size*0.42}px)`;
+        if(i%5 !== 0) line.style.opacity = '0.4';
+        dial.appendChild(tick);
+      }
+
+      // sayılar
+      for(let h=1; h<=12; h++){
+        const n = document.createElement('div');
+        n.className='num';
+        const ang = (h%12) * 30;
+        const r = size*0.33;
+        const x = 50 + Math.sin(ang*Math.PI/180)* (r/ (size/100));
+        // easier positioning with trigonometry
+        n.style.left = `calc(50% + ${Math.sin(ang*Math.PI/180)*(r)}px)`;
+        n.style.top = `calc(50% - ${Math.cos(ang*Math.PI/180)*(r)}px)`;
+        n.textContent = h;
+        nums.appendChild(n);
+      }
+    }
+
+    function pad(n){return String(n).padStart(2,'0')}
+
+    function updateClock(){
+      const now = new Date();
+      const hrs = now.getHours();
+      const mins = now.getMinutes();
+      const secs = now.getSeconds();
+      const ms = now.getMilliseconds();
+
+      // analog hesaplamalar
+      const secAngle = (secs + ms/1000) * 6; // 360/60
+      const minAngle = (mins + secs/60) * 6;
+      const hourAngle = ((hrs%12) + mins/60) * 30;
+
+      secondHand.style.transform = `translate(-50%,-100%) rotate(${secAngle}deg)`;
+      minuteHand.style.transform = `translate(-50%,-100%) rotate(${minAngle}deg)`;
+      hourHand.style.transform = `translate(-50%,-100%) rotate(${hourAngle}deg)`;
+
+      // dijital gösterge
+      digitalTime.textContent = pad(hrs)+':'+pad(mins);
+      digitalSec.textContent = pad(secs);
+
+      // tarih
+      const day = now.getDate();
+      const monthNames = ['OCA','ŞUB','MAR','NİS','MAY','HAZ','TEM','AĞU','EYL','EKİ','KAS','ARA'];
+      dateLeft.textContent = day + ' ' + monthNames[now.getMonth()];
+
+      // gün ismi (TR kısaltması)
+      const days = ['PZR','PZT','SALI','ÇAR','PER','CUM','CMT'];
+      weekday.textContent = days[now.getDay()];
+      dayNum.textContent = day;
+
+      checkAlarms(now);
+      requestAnimationFrame(updateClock);
+    }
+
+    /* Mode ve temalar */
+    toggleModeBtn.addEventListener('click', ()=>{
+      showDigital = !showDigital;
+      document.querySelector('.digital-top').style.display = showDigital ? 'block' : 'none';
+    });
+
+    document.querySelectorAll('.theme-dot').forEach(el=>{
+      el.addEventListener('click', ()=>{
+        const t = el.getAttribute('data-theme');
+        root.setAttribute('data-theme', t);
+        // küçük görsel ipuçları
+      });
+    });
+
+    fullscreenBtn.addEventListener('click', async ()=>{
+      try{
+        if(!document.fullscreenElement) await document.documentElement.requestFullscreen();
+        else await document.exitFullscreen();
+      }catch(e){console.warn(e)}
+    });
+
+    compactBtn.addEventListener('click', ()=>{
+      document.querySelector('.panel').classList.toggle('hidden');
+      if(document.querySelector('.panel').classList.contains('hidden')) compactBtn.textContent='Görünümü Aç';
+      else compactBtn.textContent='Temiz Görünüm';
+    });
+
+    /* Alarm yönetimi (localStorage) */
+    function saveAlarms(){ localStorage.setItem('zift_alarms', JSON.stringify(alarms)); }
+
+    function renderAlarms(){
+      alarmsList.innerHTML='';
+      if(alarms.length===0){ alarmsList.innerHTML = '<div class="muted">Kurulu alarm yok</div>'; return; }
+      alarms.forEach((a, idx)=>{
+        const it = document.createElement('div'); it.className='alarm-item';
+        const left = document.createElement('div'); left.innerHTML = `<div style="font-weight:700">${a.time}</div><div class="muted">${a.repeat}</div>`;
+        const right = document.createElement('div');
+        const del = document.createElement('button'); del.className='btn'; del.textContent='Sil'; del.addEventListener('click', ()=>{alarms.splice(idx,1); saveAlarms(); renderAlarms();});
+        const toggle = document.createElement('button'); toggle.className='btn'; toggle.textContent = a.enabled ? 'Kapalı' : 'Aktif'; toggle.addEventListener('click', ()=>{ a.enabled=!a.enabled; saveAlarms(); renderAlarms();});
+        right.appendChild(toggle); right.appendChild(del);
+        it.appendChild(left); it.appendChild(right);
+        alarmsList.appendChild(it);
+      });
+    }
+
+    setAlarmBtn.addEventListener('click', ()=>{
+      const t = alarmTimeInput.value;
+      if(!t){ alert('Lütfen bir zaman seçin'); return; }
+      const repeat = alarmRepeat.value;
+      alarms.push({time:t, repeat:repeat, enabled:true});
+      saveAlarms(); renderAlarms();
+      alarmTimeInput.value='';
+    });
+
+    stopAllBtn.addEventListener('click', ()=>{
+      if(activeAlarm) stopActiveAlarm();
+      alarms.forEach(a=>a.enabled=false); saveAlarms(); renderAlarms();
+    });
+
+    // alarm kontrolü: her saniye çağrılır
+    function checkAlarms(now){
+      const curHM = pad(now.getHours())+':'+pad(now.getMinutes());
+      alarms.forEach(a=>{
+        if(!a.enabled) return;
+        if(a.time !== curHM) return;
+        // tekrar kurallarını kontrol et
+        if(a.repeat === 'once'){
+          // tetikle ve disable et
+          triggerAlarm(a);
+          a.enabled = false; saveAlarms(); renderAlarms();
+        } else if(a.repeat === 'daily'){
+          triggerAlarm(a);
+        } else if(a.repeat === 'weekdays'){
+          const d = now.getDay(); // 1..5 hafta içi
+          if(d>=1 && d<=5) triggerAlarm(a);
+        }
+      });
+    }
+
+    function triggerAlarm(a){
+      if(activeAlarm) return; // aynı anda birden fazla alarmu engelle
+      activeAlarm = a;
+      playBeep();
+      showAlarmToast(a.time);
+    }
+
+    function stopActiveAlarm(){
+      activeAlarm = null;
+      if(audioCtx) { try{ audioCtx.close(); }catch(e){} audioCtx=null; }
+      hideAlarmToast();
+    }
+
+    function showAlarmToast(time){
+      const toast = document.createElement('div');
+      toast.style.position='fixed'; toast.style.left='50%'; toast.style.top='8%'; toast.style.transform='translateX(-50%)';
+      toast.style.padding='12px 18px'; toast.style.borderRadius='12px'; toast.style.background='var(--fg)'; toast.style.color='var(--bg)'; toast.style.zIndex=9999; toast.style.boxShadow='0 10px 30px rgba(0,0,0,0.4)';
+      toast.id='alarmToast';
+      toast.innerHTML = `<div style="font-weight:700">Alarm: ${time}</div><div class="muted">Durdurmak için "Dur" butonuna basın</div><div style="margin-top:8px; display:flex; gap:8px"><button class="btn fill" id="stopAlarmBtn">Dur</button><button class="btn" id="snoozeBtn">Ertele 5 dk</button></div>`;
+      document.body.appendChild(toast);
+      document.getElementById('stopAlarmBtn').addEventListener('click', ()=>{ stopActiveAlarm(); document.body.removeChild(toast); });
+      document.getElementById('snoozeBtn').addEventListener('click', ()=>{ snoozeAlarm(5); document.body.removeChild(toast); });
+    }
+    function hideAlarmToast(){ const t = document.getElementById('alarmToast'); if(t) t.remove(); }
+
+    function snoozeAlarm(mins){
+      if(!activeAlarm) return; const now = new Date(); now.setMinutes(now.getMinutes()+mins);
+      const hh = pad(now.getHours())+':'+pad(now.getMinutes());
+      alarms.push({time:hh, repeat:'once', enabled:true}); saveAlarms(); renderAlarms(); stopActiveAlarm();
+    }
+
+    function playBeep(){
+      try{
+        audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        const o = audioCtx.createOscillator();
+        const g = audioCtx.createGain();
+        o.type='sine'; o.frequency.value = 880;
+        g.gain.value = 0.0001;
+        o.connect(g); g.connect(audioCtx.destination);
+        o.start();
+        // fade in
+        g.gain.exponentialRampToValueAtTime(0.2, audioCtx.currentTime + 0.5);
+        // frequency sweep
+        o.frequency.exponentialRampToValueAtTime(220, audioCtx.currentTime + 3);
+        // stop after 6s
+        setTimeout(()=>{ try{ o.stop(); }catch(e){} }, 6000);
+      }catch(e){ console.warn('Ses çalınamadı', e); }
+    }
+
+    /* Başlangıç */
+    drawDial();
+    renderAlarms();
+    requestAnimationFrame(updateClock);
+
+    // yeniden boyutlandığında tekrar çiz
+    window.addEventListener('resize', ()=>{ drawDial(); });
+
+    // başlangıç teması
+    root.setAttribute('data-theme','black');
+
+    // erişilebilirlik kısa yolları (kullanıcı deneyimi)
+    window.addEventListener('keydown', (e)=>{
+      if(e.key === 'f') fullscreenBtn.click();
+      if(e.key === 't') document.querySelector('.theme-dot[data-theme="white"]').click();
+    });
+
+    // dokunmatik cihazlarda analog/dijital görünüm değişimi için çift tıklama
+    document.getElementById('clock').addEventListener('dblclick', ()=>{ toggleModeBtn.click(); });
+
+    // sayfa yüklendiğinde: eğer kullanıcı dijital istemiyorsa gizle
+    if(!showDigital) document.querySelector('.digital-top').style.display='none';
+
+  </script>
+</body>
+</html>
+
+
+
